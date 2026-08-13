@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:payload_app/app.dart';
 import 'package:payload_app/features/campaign/campaign_controller.dart';
+import 'package:payload_app/features/core/accessibility/accessibility_controller.dart';
+import 'package:payload_app/features/core/accessibility/accessibility_storage.dart';
 import 'package:payload_app/features/core/content/content_repository.dart';
 import 'package:payload_app/features/core/storage/campaign_storage.dart';
 import 'package:payload_app/features/core/storage/preset_storage.dart';
@@ -36,6 +38,9 @@ CampaignController _fixtureCampaign(ContentRepository content) =>
 
 PresetRepository _fixturePresets() => PresetRepository(InMemoryPresetStorage());
 
+AccessibilityController _fixtureAccessibility() =>
+    AccessibilityController(storage: InMemoryAccessibilityStorage());
+
 void main() {
   testWidgets('app boots to the workbench screen', (WidgetTester tester) async {
     final content = _fixtureContent();
@@ -43,6 +48,7 @@ void main() {
       content: content,
       campaign: _fixtureCampaign(content),
       presets: _fixturePresets(),
+      accessibility: _fixtureAccessibility(),
     ));
     await tester.pumpAndSettle();
 
@@ -56,6 +62,7 @@ void main() {
       content: content,
       campaign: _fixtureCampaign(content),
       presets: _fixturePresets(),
+      accessibility: _fixtureAccessibility(),
     ));
     await tester.pumpAndSettle();
 
@@ -75,6 +82,7 @@ void main() {
       content: content,
       campaign: _fixtureCampaign(content),
       presets: _fixturePresets(),
+      accessibility: _fixtureAccessibility(),
     ));
     await tester.pumpAndSettle();
 

@@ -351,6 +351,34 @@ class EndpointBlueprint extends _i2.EndpointRef {
       );
 }
 
+/// Remote config delivery (§2.1 "content as data ... bisa dipush via
+/// remote config tanpa app update", §5 Phase 6 "remote config"). A client
+/// polls [currentVersion] against its cached version and only calls
+/// [fetchBundle] when they differ — a balance/content push then reaches
+/// players without an app store release.
+/// {@category Endpoint}
+class EndpointContent extends _i2.EndpointRef {
+  EndpointContent(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'content';
+
+  _i3.Future<String> currentVersion() => caller.callServerEndpoint<String>(
+    'content',
+    'currentVersion',
+    {},
+  );
+
+  /// The full content bundle plus its version, as a single JSON blob —
+  /// same "content_schema types aren't Serverpod models" reasoning as
+  /// `ShopEndpoint.listSkus`.
+  _i3.Future<String> fetchBundle() => caller.callServerEndpoint<String>(
+    'content',
+    'fetchBundle',
+    {},
+  );
+}
+
 /// Daily contract puzzle + global leaderboard (§1.5.5, §2.4).
 /// {@category Endpoint}
 class EndpointContract extends _i2.EndpointRef {
@@ -461,6 +489,19 @@ class EndpointPlayer extends _i2.EndpointRef {
         'updateSettings',
         {'settingsJson': settingsJson},
       );
+
+  /// Deletes the calling player's account (§5 Phase 6 store-compliance
+  /// requirement — see docs/STORE_COMPLIANCE.md). Deletes the underlying
+  /// `AuthUser`; every owned row (`Unlock`, `Defense`, `Battle`,
+  /// `Blueprint`, `Purchase`, etc.) cascades via each model's own
+  /// `relation(onDelete=Cascade)` back to `Player`, which itself cascades
+  /// from `AuthUser` the same way — one delete, not a manual sweep of
+  /// every table.
+  _i3.Future<void> deleteAccount() => caller.callServerEndpoint<void>(
+    'player',
+    'deleteAccount',
+    {},
+  );
 }
 
 /// Season lifecycle + battle pass progress (§1.5.2, §1.6, §2.4).
@@ -633,6 +674,7 @@ class Client extends _i2.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     battle = EndpointBattle(this);
     blueprint = EndpointBlueprint(this);
+    content = EndpointContent(this);
     contract = EndpointContract(this);
     defense = EndpointDefense(this);
     player = EndpointPlayer(this);
@@ -649,6 +691,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointBattle battle;
 
   late final EndpointBlueprint blueprint;
+
+  late final EndpointContent content;
 
   late final EndpointContract contract;
 
@@ -670,6 +714,7 @@ class Client extends _i2.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'battle': battle,
     'blueprint': blueprint,
+    'content': content,
     'contract': contract,
     'defense': defense,
     'player': player,

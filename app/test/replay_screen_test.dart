@@ -47,6 +47,17 @@ void main() {
     await tester.pump();
   });
 
+  testWidgets('export GIF button renders a clip and shows its size', (tester) async {
+    await tester.pumpWidget(MaterialApp(home: ReplayScreen(network: _network(), log: _log())));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+
+    await tester.tap(find.byKey(const Key('replay_export_gif_button')));
+    await tester.pump();
+
+    expect(find.textContaining('Replay GIF rendered'), findsOneWidget);
+  });
+
   testWidgets('skip to result shows the result banner', (tester) async {
     await tester.pumpWidget(MaterialApp(home: ReplayScreen(network: _network(), log: _log())));
     await tester.pump();

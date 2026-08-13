@@ -221,7 +221,7 @@
     "id": "brute_force",
     "family": "action",
     "size_kb": 6,
-    "energy_cost": 8,
+    "energy_cost": 35,
     "noise": 9,
     "params_schema": [],
     "unlock_mission": "ch2_m9"
@@ -244,7 +244,7 @@
     "id": "disguise",
     "family": "action",
     "size_kb": 6,
-    "energy_cost": 5,
+    "energy_cost": 16,
     "noise": 0,
     "params_schema": [],
     "unlock_mission": "ch3_m1"
@@ -279,7 +279,7 @@
     "id": "replicate",
     "family": "action",
     "size_kb": 14,
-    "energy_cost": 20,
+    "energy_cost": 2,
     "noise": 6,
     "params_schema": [],
     "unlock_mission": "ch3_m4"

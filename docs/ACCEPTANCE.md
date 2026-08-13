@@ -70,4 +70,46 @@ Known gap vs. the letter of §5 (tracked, not silently dropped — see `docs/DEC
 
 ## Phase 6 — Polish, LiveOps, Launch readiness
 
-_Pending._
+| AC | Status | Note |
+|---|---|---|
+| Crash-free sessions >99.5% di soft launch | ⛔ | Requires real installs and a live crash-reporting backend aggregating across users — none exist in this environment. Substituted verification: `ErrorReporter`/`CrashFreeSessionTracker` (the per-session signal a real metric would aggregate) is wired into `main.dart`'s global error handlers and covered by 4 passing unit tests. |
+| D1 retention terukur | ⛔ | Requires real users and a live analytics pipeline consuming `TelemetryEvent` rows over real calendar time — not possible without users. The ingestion mechanism itself (`TelemetryEndpoint.ingest`, Phase 5) is real and tested. |
+| Checklist store compliance (Play Data Safety, rating IARC) lengkap | ✅ | `docs/STORE_COMPLIANCE.md` — every data type and IARC question answered from the actual data models/endpoints in this repo, not generically. One real pre-launch gap found and tracked: no client UI yet for the (now-implemented) `PlayerEndpoint.deleteAccount`. |
+
+Also delivered this phase, beyond the letter of the three ACs above:
+
+- **Balance pass (§5 "balance pass via bot harness")**: all 3 archetypes
+  now land within the 40-60% win-rate band at 1000 seeds/pair (`bot_harness: OK`),
+  up from Phase 1's known-untuned 66.7%/66.7%/0%. All 10 `sim_core`
+  golden hashes re-pinned accordingly (7 of 10 changed).
+- **Accessibility (§1.8)**: colorblind-safe palette, large text,
+  reduce-motion, and CRT scanline toggle — a real, persisted,
+  live-wired settings system (10 new passing tests across
+  `accessibility_controller_test.dart` + `settings_screen_test.dart`).
+- **Localization EN+ID (§1.8/§5)**: real `flutter gen-l10n` wiring,
+  scoped to the Settings screen (known gap: rest of the app is still
+  English-only — see `docs/DECISIONS.md`).
+- **Remote config (§2.1/§5)**: `ContentEndpoint` (server) +
+  `RemoteConfigContentSync` (client, 6 passing tests against a fake
+  fetcher) — version-check/cache/fallback logic is real; live transport
+  between them is unverified (no live server in this environment, and
+  the app has no Serverpod client dependency yet).
+- **Video replay export (§1.7)**: `ReplayGifExporter` renders an actual
+  decodable multi-frame animated GIF from a real `BattleLog` (3 passing
+  tests, including a full encode→decode round trip), reachable from a new
+  export button on the replay screen. GIF, not MP4 — no video encoder
+  available in this environment; see `docs/DECISIONS.md`.
+- **Ops docs**: `docs/RUNBOOK.md`, `docs/STORE_LISTING.md`,
+  `docs/SOFT_LAUNCH_CHECKLIST.md` — all real, cross-checked against the
+  actual codebase, not templated placeholders.
+
+Server: 83/83 `server/test/business` tests pass (3 new this phase),
+`dart analyze` clean. Client: 75/75 `app/` tests pass (22 new this
+phase), `flutter analyze --fatal-infos` clean across the whole workspace.
+
+Known gaps vs. the letter of §5 (tracked, not silently dropped — see
+`docs/DECISIONS.md` "Phase 6"): most app screens outside Settings remain
+English-only; remote config isn't wired into the app's boot path; no
+`SentryErrorReporter`/Grafana dashboard exists (seams only); GIF instead
+of MP4 export, with no save-to-disk/share-sheet wiring yet; no on-call
+rotation defined (no team/service to staff one).

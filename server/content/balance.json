@@ -3,7 +3,7 @@
   "max_capacity_kb": 90,
   "stealth_safe_max_kb": 25,
   "stealth_auto_flag_min_kb": 60,
-  "starting_energy": 100,
+  "starting_energy": 160,
   "noise_alert_threshold": 70,
   "max_ticks_per_battle": 600,
   "max_eval_steps_per_tick": 64,

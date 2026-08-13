@@ -185,3 +185,49 @@ All notable changes to the PAYLOAD project, organized by execution phase
   `docs/DECISIONS.md`.
 - **Known gap**: no client-side UI for any of these five systems this
   phase — see `docs/DECISIONS.md` "Phase 5".
+
+## Phase 6 — Polish, LiveOps, Launch readiness
+
+- **Balance pass (§4.3/§5)**: tuned `content/blocks.json` (`disguise`
+  5→16, `brute_force` 8→35, `replicate` 20→2) and `content/balance.json`
+  (`starting_energy` 100→160) so all 3 `tools/bot_harness` archetypes land
+  within the 40-60% win-rate band (verified at 1000 seeds/pair). All 10
+  `sim_core` golden hashes re-pinned; app/server bundled content copies
+  re-synced.
+- **Accessibility (§1.8)**: new `app/lib/features/core/accessibility/`
+  (`AccessibilitySettings`, `AccessibilityController`,
+  `shared_preferences`-backed storage) — colorblind-safe palette, large
+  text, reduce-motion, CRT scanline toggle. Wired live into `PayloadApp`
+  (theme, `TextScaler`, `disableAnimations`, `ScanlineOverlay`). Real
+  `SettingsScreen` replacing the placeholder, with 10 new passing tests.
+- **Localization EN+ID (§1.8/§5)**: `flutter_localizations`/`intl` wired
+  up, `l10n.yaml` + `lib/l10n/app_{en,id}.arb`, `AppLocalizations`
+  generated and used throughout `SettingsScreen`; an EN/ID/follow-system
+  locale picker persisted in the same settings blob. 2 new locale smoke
+  tests.
+- **Remote config (§2.1/§5)**: new server `ContentEndpoint`
+  (`currentVersion`/`fetchBundle`, versioned via a pure `ContentVersion.hashFor`
+  SHA-256 over the content JSON, 3 new tests) and new client
+  `RemoteConfigContentSync` (`app/lib/features/core/remote_config/`,
+  version-check/cache/fallback, 6 new tests against a fake fetcher).
+- **Crash reporting seam (§5)**: new `app/lib/features/core/diagnostics/`
+  (`ErrorReporter`, `ConsoleErrorReporter`, `CrashFreeSessionTracker`),
+  wired into `main.dart`'s `FlutterError.onError`/
+  `PlatformDispatcher.instance.onError`. 4 new tests.
+- **Video replay export (§1.7)**: new `ReplayGifExporter`
+  (`app/lib/features/replay/export/`) renders an animated GIF from a real
+  `BattleLog`, reusing the Flame renderer's own layout/frame
+  reconstruction. New export button on `ReplayScreen`. 3 new tests
+  (including an encode→decode round trip).
+- **`PlayerEndpoint.deleteAccount`**: new endpoint, cascades through every
+  owned table via existing `relation(onDelete=Cascade)` declarations.
+- Ops docs: `docs/RUNBOOK.md`, `docs/STORE_LISTING.md`,
+  `docs/STORE_COMPLIANCE.md`, `docs/SOFT_LAUNCH_CHECKLIST.md`.
+- 83/83 `server/test/business` tests pass (3 new), `dart analyze` clean.
+  75/75 `app/` tests pass (22 new), `flutter analyze --fatal-infos` clean
+  workspace-wide.
+- **Known gaps** (see `docs/DECISIONS.md` "Phase 6"): localization covers
+  Settings only; remote config isn't wired into the app boot path or a
+  live transport; no live Sentry/Grafana backend; GIF export has no
+  save-to-disk/share-sheet wiring; `deleteAccount` has no client UI entry
+  point yet; no on-call rotation defined.

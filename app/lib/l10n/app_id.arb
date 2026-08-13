@@ -1,0 +1,17 @@
+{
+  "@@locale": "id",
+  "settingsTitle": "Pengaturan",
+  "settingsAccessibilitySection": "Aksesibilitas",
+  "settingsColorblindTitle": "Palet warna aman buta warna",
+  "settingsColorblindSubtitle": "Mengganti aksen magenta/cyan dengan biru/oranye",
+  "settingsLargeTextTitle": "Teks besar",
+  "settingsReduceMotionTitle": "Kurangi gerakan",
+  "settingsReduceMotionSubtitle": "Mematikan efek getar layar dan scanline CRT",
+  "settingsScanlineTitle": "Efek scanline CRT",
+  "settingsScanlineSubtitleDisabled": "Nonaktif selama kurangi gerakan aktif",
+  "settingsScanlineSubtitleDefault": "Nonaktif secara default — efek kosmetik",
+  "settingsLanguageSection": "Bahasa",
+  "settingsLanguageSystem": "Ikuti sistem",
+  "settingsLanguageEnglish": "Inggris",
+  "settingsLanguageIndonesian": "Indonesia"
+}

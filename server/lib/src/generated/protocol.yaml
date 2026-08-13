@@ -17,6 +17,9 @@ blueprint:
   - listApproved:
   - watchReplay:
   - copy:
+content:
+  - currentVersion:
+  - fetchBundle:
 contract:
   - today:
   - submitScore:
@@ -27,6 +30,7 @@ player:
   - createGuest:
   - me:
   - updateSettings:
+  - deleteAccount:
 season:
   - current:
   - rolloverIfDue:

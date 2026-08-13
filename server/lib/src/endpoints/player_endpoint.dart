@@ -56,4 +56,17 @@ class PlayerEndpoint extends Endpoint {
     if (player == null) return null;
     return Player.db.updateRow(session, player.copyWith(settingsJson: settingsJson));
   }
+
+  /// Deletes the calling player's account (§5 Phase 6 store-compliance
+  /// requirement — see docs/STORE_COMPLIANCE.md). Deletes the underlying
+  /// `AuthUser`; every owned row (`Unlock`, `Defense`, `Battle`,
+  /// `Blueprint`, `Purchase`, etc.) cascades via each model's own
+  /// `relation(onDelete=Cascade)` back to `Player`, which itself cascades
+  /// from `AuthUser` the same way — one delete, not a manual sweep of
+  /// every table.
+  Future<void> deleteAccount(Session session) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) throw NotAuthenticatedException();
+    await AuthUsers().delete(session, authUserId: authInfo.authUserId);
+  }
 }

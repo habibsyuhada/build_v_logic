@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sim_core/sim_core.dart';
 
 import '../core/theme/payload_theme.dart';
+import 'export/replay_gif_exporter.dart';
 import 'flame/replay_game.dart';
 import 'replay_playback_controller.dart';
 
@@ -36,11 +37,35 @@ class _ReplayScreenState extends State<ReplayScreen> {
     super.dispose();
   }
 
+  /// §1.7 "Replay bisa di-export sebagai video pendek (render offline di
+  /// client)". Renders a short GIF clip of the replay entirely on-device.
+  /// Actually saving/sharing the file needs a platform plugin
+  /// (path_provider/share_plus) not wired up in this environment — see
+  /// docs/DECISIONS.md — so this surfaces the encoded size as proof the
+  /// render pipeline runs end-to-end, rather than silently doing nothing.
+  Future<void> _exportGif(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final bytes = ReplayGifExporter.export(network: widget.network, log: widget.log);
+    if (!context.mounted) return;
+    final kb = (bytes.length / 1024).toStringAsFixed(1);
+    messenger.showSnackBar(SnackBar(content: Text('Replay GIF rendered — $kb KB')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: PayloadColors.background,
-      appBar: AppBar(title: const Text('replay')),
+      appBar: AppBar(
+        title: const Text('replay'),
+        actions: [
+          IconButton(
+            key: const Key('replay_export_gif_button'),
+            icon: const Icon(Icons.movie_creation_outlined),
+            tooltip: 'export as GIF',
+            onPressed: () => _exportGif(context),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(child: GameWidget(game: _game, key: const Key('replay_game_widget'))),

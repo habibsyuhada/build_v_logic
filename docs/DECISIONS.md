@@ -429,3 +429,128 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   routes for these features are unchanged. This is a genuine gap against
   §5's Phase 5 scope, not a completed-but-untested corner — recorded
   here rather than silently left implicit.
+
+## Phase 6
+
+- **Balance pass methodology (§5 "balance pass via bot harness").**
+  Phase 1 left all three `tools/bot_harness` archetypes outside the
+  40-60% win-rate band (Ghost/Bulldozer at 66.7%, Hydra at 0%) — expected
+  for untuned first-pass numbers. Rather than guessing at numbers,
+  balance was tuned by instrumenting individual battles
+  (`resolveBattle`'s event log) against the specific archetype/topology
+  pairs that were winning/losing 100% of the time (results are
+  deterministic per pair in this harness — no per-topology randomness
+  affects win/loss, only which topologies an archetype can complete at
+  all), identifying the exact mechanical cause of each all-or-nothing
+  result, then adjusting the one block-cost lever closest to that cause:
+  `disguise` energy cost 5→16 (Ghost was completing every chain length
+  including the longest, undercosted for a strategy that pays it every
+  tick), `brute_force` energy cost 8→35 (Bulldozer was affordably
+  breaking every firewall level with margin to spare), `replicate`
+  energy cost 20→2 (Hydra's flat replication tax plus the halving-per-
+  split mechanic was leaving spawned copies with too little energy to
+  ever reach data — even a near-zero flat cost still leaves the halving
+  as the real, intentional "numbers over precision" tax the archetype's
+  own doc comment describes), and `starting_energy` 100→160 (a shared
+  buff needed to bring Hydra up at all, offset by the two nerfs above so
+  Ghost/Bulldozer didn't just rise back out of band). Final state: all
+  three archetypes land in [41.7%, 58.3%], verified stable at the full
+  1000-seeds-per-pair run (`bot_harness: OK`). Changing `content/blocks.json`
+  and `content/balance.json` this way is exactly the "content as data,
+  no hardcoded balance" principle (§2.1) doing its job — no `sim_core`
+  code changed, only data.
+- **Balance pass re-pinned all 10 `sim_core` golden hashes** (7 of 10
+  actually changed; `04_wait_forever_tick_cap`, `05_infinite_sensor_loop_stalls`,
+  `06_self_destruct_immediately` didn't, since none of those scenarios'
+  outcomes depend on disguise/brute_force/replicate/starting_energy).
+  Same "intentional balance/behavior update" path as Phase 3's
+  `peakNoiseMeter` addition: regenerated via
+  `dart run packages/sim_core/tool/print_golden_hashes.dart`, confirmed
+  stable across repeated runs, then updated `expectedGoldenHashes`.
+- **Accessibility (§1.8) is a real, tested settings system**, not just
+  the `colorblindSafe` theme parameter that already existed unused since
+  Phase 0: `AccessibilitySettings` (colorblind palette, large text,
+  reduce motion, CRT scanline toggle) persisted via `shared_preferences`
+  (same `JsonBlobStorage` pattern as campaign/preset storage), wired live
+  into `MaterialApp` (theme, `TextScaler`, `disableAnimations`, a
+  `ScanlineOverlay`). Reduce-motion forcibly disables the scanline
+  regardless of its own toggle, matching §1.8's "reduce-motion mode
+  (matikan screen-shake/scanline)" literally. No screen-shake effect
+  exists yet to disable (Phase 3 documented no VFX exists) — the toggle
+  is real and ready for when one does.
+- **Locale preference lives in the same `AccessibilitySettings` blob**
+  rather than a second persisted settings object — simplest interpretation
+  consistent with "one opaque settings blob mirrors `Player.settingsJson`
+  server-side" already established in Phase 4's `PlayerEndpoint.updateSettings`
+  doc comment, even though "locale" isn't strictly an accessibility
+  concern. Revisit if the settings blob grows enough to warrant splitting.
+- **Localization (§1.8/§5 "lokalisasi EN+ID") covers the Settings screen
+  only, not the whole app.** Real `flutter gen-l10n` wiring (ARB files,
+  `AppLocalizations`, `localizationsDelegates`/`supportedLocales` on
+  `MaterialApp`, a working EN/ID picker) — verified via a decode-both-
+  locales smoke test — but every other screen's strings (workbench,
+  campaign, replay, etc.) remain hardcoded English. Full-app localization
+  is a mechanical extension of this same pattern, not a redesign; scoped
+  down here the same way Phase 3 scoped down pixel-art sprites to
+  placeholder shapes — recorded as a known gap, not silently claimed.
+- **Remote config (§2.1, §5) is a real, independently-tested mechanism on
+  both sides, not wired end-to-end.** Server: `ContentEndpoint.currentVersion`/
+  `fetchBundle`, versioned by `ContentVersion.hashFor` (a pure SHA-256 over
+  the serialized blocks/balance/shop JSON — changes iff content actually
+  changes, not a manually-bumped counter). Client:
+  `RemoteConfigContentSync` (check version → skip or fetch → cache →
+  never throw, falls back to whatever's cached on failure), tested
+  against a fake `RemoteContentFetcher` with zero network dependency. Not
+  wired into `ContentRepository.load()`'s boot path or connected to a
+  real Serverpod-generated client — the app has never called the live
+  server in this environment (same constraint as every other endpoint
+  since Phase 4) and `app/` doesn't depend on `packages/shared_models` at
+  all yet. The seam is real; the transport isn't verified.
+- **Crash reporting (§5 "Sentry/Grafana") is a real capture path with no
+  live backend.** `ErrorReporter` interface, wired into
+  `FlutterError.onError`/`PlatformDispatcher.instance.onError` in
+  `main.dart` so every uncaught error already flows through it;
+  `ConsoleErrorReporter` is the shipped default (safe, requires no
+  credentials); `CrashFreeSessionTracker` wraps it to count fatal errors
+  per session — the client-side signal a real crash-free-sessions metric
+  would aggregate across users. No `SentryErrorReporter` is implemented
+  — no live DSN to send to or verify against in this environment — same
+  "seam real, backend not" pattern as `ReceiptValidator` (Phase 5).
+- **Video replay export (§1.7) encodes an animated GIF, not an MP4.**
+  Flutter has no built-in video encoder and this sandbox has no `ffmpeg`
+  binary to shell out to. `ReplayGifExporter` reuses the exact same
+  `computeNetworkLayout`/`computeReplayFrame` the Flame renderer uses and
+  the same placeholder circle/line geometry (§3, Phase 3's "no pixel-art
+  sprites yet" decision), rasterizing each sampled tick via `package:image`
+  and encoding a real multi-frame GIF — verified by decoding it back and
+  checking frame count/dimensions, not just checking the byte count is
+  nonzero. A GIF is a legitimate short shareable clip for the same
+  TikTok/Shorts hook §1.7 describes, just not the literal container
+  format named. The replay screen's export button renders the clip and
+  reports its size; it does not yet save to disk or open a share sheet
+  (`path_provider`/`share_plus` aren't dependencies here) — documented as
+  the next step, not silently absent.
+- **`PlayerEndpoint.deleteAccount` was added mid-phase**, discovered as a
+  genuine gap while writing `docs/STORE_COMPLIANCE.md` (both major
+  stores require an in-app account/data deletion path). It deletes the
+  `AuthUser`; every owned table cascades via its own already-declared
+  `relation(onDelete=Cascade)` back through `Player`, so this is a
+  one-line business operation, not a manual sweep. No client UI calls it
+  yet — recorded as a pre-launch blocker in `docs/SOFT_LAUNCH_CHECKLIST.md`,
+  not silently left undone.
+- **`docs/RUNBOOK.md`, `docs/STORE_LISTING.md`, `docs/STORE_COMPLIANCE.md`,
+  `docs/SOFT_LAUNCH_CHECKLIST.md` are real, complete documents**, not
+  placeholders — every status marker in them (✅/⚠️/⛔) reflects something
+  actually verifiable in this repository, cross-checked against the
+  actual data models and endpoints rather than written generically. Items
+  that need infrastructure this environment doesn't have (live store
+  consoles, a hosted privacy policy, a device to capture screenshots) are
+  marked ⛔ with the specific missing precondition named, per the
+  "Execution environment constraints" rule at the top of this file.
+- **The AC items requiring live users are still not verifiable here**:
+  "crash-free sessions >99.5% di soft launch" and "D1 retention terukur"
+  both need real installs and a live analytics backend aggregating
+  `TelemetryEvent` rows over real time — the ingestion/tracking mechanism
+  on both is real and tested (see above); the metric itself cannot exist
+  without users. Marked ⛔ in `docs/ACCEPTANCE.md`, consistent with every
+  prior phase's handling of this same category of AC.
