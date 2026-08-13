@@ -1,0 +1,21 @@
+### One player's reverse-engineer progress on one blueprint (§1.5.4:
+### "reverse-engineer: replay virus tersebut 3x untuk 'membaca' 1 blok").
+### `blocksRevealed` grows by one every [replaysPerBlock] replays watched;
+### once it reaches the blueprint's full block count, the player may copy
+### the design (checked in business logic, not stored here).
+class: BlueprintReveal
+table: blueprint_reveals
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+  blueprint: Blueprint?, relation(onDelete=Cascade)
+
+  replaysWatched: int, defaultModel=0
+  blocksRevealed: int, defaultModel=0
+
+  updatedAt: DateTime, defaultModel=now
+
+indexes:
+  blueprint_reveals_player_blueprint_idx:
+    fields: playerId, blueprintId
+    unique: true

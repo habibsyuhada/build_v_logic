@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m7",
+  "chapter": 2,
+  "index_in_chapter": 7,
+  "title": "Ch2.7 — unlock: move_toward_exit",
+  "network_id": "net_mission_ch2_m7",
+  "unlocks_blocks": [
+    "move_toward_exit"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 111
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `move_toward_exit`. Wire it in."
+  ]
+}

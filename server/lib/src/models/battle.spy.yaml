@@ -1,0 +1,47 @@
+### One resolved PvP battle (§2.3, §2.4 `battles`). Created by the battle
+### worker after `sim_core.resolveBattle` runs; never written to by the
+### client directly — the client only submits an `AttackRequest` and later
+### fetches this row (see `BattleEndpoint`).
+class: Battle
+table: battles
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  attacker: Player?, relation(onDelete=Cascade)
+  defender: Player?, relation(onDelete=Cascade)
+
+  ### The exact defense version attacked (§2.3: never a mid-edit defense).
+  defenseVersion: int
+
+  ### True if the defender was matched via the ghost network (§1.5.3)
+  ### rather than a live opponent — still a real snapshot, just presented
+  ### anonymized to the attacker.
+  isGhostMatch: bool, defaultModel=false
+
+  ### The submitted virus program, as JSON (content_schema.VirusDef).
+  virusDefJson: String
+
+  ### sim_core seed used to resolve this battle (§2.3, §3.1) — the battle
+  ### is fully reproducible from (virusDefJson, defense snapshot, seed).
+  seed: int
+
+  ### sim_core / content package version this battle was resolved with
+  ### (§2.7 versioning). Replays must be read with a compatible version.
+  simVersion: int
+
+  ### Inline battle log JSON (BattleLog.toJson()) when small enough.
+  ### Mutually exclusive with [logRef] — exactly one is set.
+  logJson: String?
+
+  ### Object-storage key for the battle log when it's too large to store
+  ### inline (§2.4: ">32 KB"). Mutually exclusive with [logJson].
+  logRef: String?
+
+  score: int
+  outcome: BattleOutcome
+
+  ### Elo-like rating delta applied to the attacker (defender gets the
+  ### negation). Positive = attacker gained rating.
+  ratingDelta: int
+
+  createdAt: DateTime, defaultModel=now

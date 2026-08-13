@@ -1,0 +1,11 @@
+name: shared_models
+description: Generated Serverpod client protocol for PAYLOAD (§2.2 shared_models). Regenerate with `serverpod generate` from server/.
+
+environment:
+  sdk: '^3.8.0'
+
+resolution: workspace
+
+dependencies:
+  serverpod_auth_idp_client: 3.4.11
+  serverpod_client: 3.4.11

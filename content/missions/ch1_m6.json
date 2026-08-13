@@ -1,0 +1,18 @@
+{
+  "id": "ch1_m6",
+  "chapter": 1,
+  "index_in_chapter": 6,
+  "title": "Ch1.6 — unlock: data_verified",
+  "network_id": "net_mission_ch1_m6",
+  "unlocks_blocks": [
+    "data_verified"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 65,
+    "max_tick_for_star": 93
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `data_verified`. Wire it in."
+  ]
+}

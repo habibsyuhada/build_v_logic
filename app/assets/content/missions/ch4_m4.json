@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m4",
+  "chapter": 4,
+  "index_in_chapter": 4,
+  "title": "Ch4.4 — unlock: intruder_detected",
+  "network_id": "net_mission_ch4_m4",
+  "unlocks_blocks": [
+    "intruder_detected"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 132
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `intruder_detected`. Wire it in."
+  ]
+}

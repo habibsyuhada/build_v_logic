@@ -1,0 +1,18 @@
+{
+  "id": "ch3_m2",
+  "chapter": 3,
+  "index_in_chapter": 2,
+  "title": "Ch3.2 — unlock: delete_log",
+  "network_id": "net_mission_ch3_m2",
+  "unlocks_blocks": [
+    "delete_log"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 53,
+    "max_tick_for_star": 111
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `delete_log`. Wire it in."
+  ]
+}

@@ -1,0 +1,23 @@
+### One IAP purchase (§2.4 `purchases`, §2.5: "verifikasi receipt
+### server-side"). The receipt is always re-verified against the store's
+### own API server-side — never trusted from the client's stated
+### price/SKU. See `ReceiptValidator` for the (store-credential-gated)
+### verification seam.
+class: Purchase
+table: purchases
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+
+  ### content/shop.json SkuDef id.
+  sku: String
+
+  storeReceipt: String
+
+  state: PurchaseState, defaultModel=pending
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  purchases_player_idx:
+    fields: playerId

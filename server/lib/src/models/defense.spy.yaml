@@ -1,0 +1,21 @@
+### A player's saved defense: topology + per-node defense-logic (§2.4
+### `defenses`). PvP attacks always target the most recent snapshot with
+### `isActive == true` — never a defense mid-edit (§2.3: "defender tidak
+### bisa di-grief saat sedang mengedit").
+class: Defense
+table: defenses
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+
+  ### The network topology + per-node defense DAGs, as JSON matching
+  ### `content_schema.NetworkDef.toJson()` (defense_logic embedded per node).
+  defJson: String
+
+  version: int, defaultModel=1
+
+  isActive: bool, defaultModel=false
+
+  ### Set once `content_schema.validateNetwork` + per-node `validateDag`
+  ### have both passed server-side.
+  validatedAt: DateTime?

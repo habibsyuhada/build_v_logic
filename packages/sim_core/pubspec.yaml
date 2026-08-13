@@ -1,0 +1,18 @@
+name: sim_core
+description: >
+  Deterministic battle simulation core for PAYLOAD. Pure Dart, no Flutter or
+  dart:io dependency. Single source of truth for gameplay, used by both
+  client (test-run/replay) and server (authoritative resolution).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  content_schema: ^0.1.0
+
+dev_dependencies:
+  test: ^1.25.0
+  crypto: ^3.0.3
+resolution: workspace

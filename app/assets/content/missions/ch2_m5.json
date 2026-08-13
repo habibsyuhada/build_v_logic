@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m5",
+  "chapter": 2,
+  "index_in_chapter": 5,
+  "title": "Ch2.5 — unlock: copies_alive_gt",
+  "network_id": "net_mission_ch2_m5",
+  "unlocks_blocks": [
+    "copies_alive_gt"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 105
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `copies_alive_gt`. Wire it in."
+  ]
+}

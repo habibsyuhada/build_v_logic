@@ -1,0 +1,18 @@
+### A saved virus build (§2.4 `virus_presets`). Capped at
+### [maxVirusPresetsPerPlayer] per player, enforced in
+### `PresetEndpoint` (app-side mirror: `app/lib/features/core/storage/preset_storage.dart`'s
+### `maxVirusPresets`, kept equal on purpose).
+class: VirusPreset
+table: virus_presets
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+
+  name: String
+
+  ### The DAG program, as JSON matching `content_schema.DagDef.toJson()`.
+  defJson: String
+
+  sizeKb: int
+
+  updatedAt: DateTime, defaultModel=now

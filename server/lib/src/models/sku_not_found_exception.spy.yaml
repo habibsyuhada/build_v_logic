@@ -1,0 +1,2 @@
+### Thrown when a purchase references an unknown content/shop.json SKU id.
+exception: SkuNotFoundException

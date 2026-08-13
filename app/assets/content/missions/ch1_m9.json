@@ -1,0 +1,18 @@
+{
+  "id": "ch1_m9",
+  "chapter": 1,
+  "index_in_chapter": 9,
+  "title": "Ch1.9 — unlock: node_visited_before",
+  "network_id": "net_mission_ch1_m9",
+  "unlocks_blocks": [
+    "node_visited_before"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 65,
+    "max_tick_for_star": 102
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `node_visited_before`. Wire it in."
+  ]
+}

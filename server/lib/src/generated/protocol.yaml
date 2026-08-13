@@ -1,0 +1,44 @@
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+battle:
+  - submitAttack:
+  - getBattle:
+blueprint:
+  - publish:
+  - listApproved:
+  - watchReplay:
+  - copy:
+content:
+  - currentVersion:
+  - fetchBundle:
+contract:
+  - today:
+  - submitScore:
+  - leaderboard:
+defense:
+  - save:
+player:
+  - createGuest:
+  - me:
+  - updateSettings:
+  - deleteAccount:
+season:
+  - current:
+  - rolloverIfDue:
+  - myProgress:
+  - addXp:
+  - myTier:
+shop:
+  - listSkus:
+  - purchase:
+telemetry:
+  - ingest:

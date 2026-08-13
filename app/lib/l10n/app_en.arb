@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "settingsTitle": "Settings",
+  "settingsAccessibilitySection": "Accessibility",
+  "settingsColorblindTitle": "Colorblind-safe palette",
+  "settingsColorblindSubtitle": "Swaps magenta/cyan accents for blue/orange",
+  "settingsLargeTextTitle": "Large text",
+  "settingsReduceMotionTitle": "Reduce motion",
+  "settingsReduceMotionSubtitle": "Turns off screen-shake and the CRT scanline effect",
+  "settingsScanlineTitle": "CRT scanline effect",
+  "settingsScanlineSubtitleDisabled": "Disabled while reduce motion is on",
+  "settingsScanlineSubtitleDefault": "Off by default — a cosmetic overlay",
+  "settingsLanguageSection": "Language",
+  "settingsLanguageSystem": "Follow system",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageIndonesian": "Indonesian"
+}

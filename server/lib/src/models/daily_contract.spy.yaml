@@ -1,0 +1,20 @@
+### One day's system-generated puzzle network (§1.5.5, §2.4
+### `daily_contracts`), deterministically seeded from its date so every
+### player faces the exact same network.
+class: DailyContract
+table: daily_contracts
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The contract's date, as `YYYY-MM-DD` (UTC) — also the seed source.
+  contractDate: String
+
+  ### The generated network, as JSON (content_schema.NetworkDef).
+  networkJson: String
+
+  seed: int
+
+indexes:
+  daily_contracts_date_idx:
+    fields: contractDate
+    unique: true

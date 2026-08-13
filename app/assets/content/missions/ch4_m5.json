@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m5",
+  "chapter": 4,
+  "index_in_chapter": 5,
+  "title": "Ch4.5 — unlock: intruder_copying",
+  "network_id": "net_mission_ch4_m5",
+  "unlocks_blocks": [
+    "intruder_copying"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 135
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `intruder_copying`. Wire it in."
+  ]
+}

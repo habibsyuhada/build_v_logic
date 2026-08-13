@@ -1,0 +1,185 @@
+{
+  "id": "net_mission_ch2_m4",
+  "nodes": [
+    {
+      "id": "entry",
+      "type": "entry",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r1"
+      ]
+    },
+    {
+      "id": "r1",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r2"
+      ]
+    },
+    {
+      "id": "r2",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r3"
+      ]
+    },
+    {
+      "id": "r3",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r4"
+      ]
+    },
+    {
+      "id": "r4",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r5"
+      ]
+    },
+    {
+      "id": "r5",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r6"
+      ]
+    },
+    {
+      "id": "r6",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "r7"
+      ]
+    },
+    {
+      "id": "r7",
+      "type": "relay",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "gate"
+      ]
+    },
+    {
+      "id": "gate",
+      "type": "relay",
+      "firewall": {
+        "level": 1,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 0,
+        "verified": false
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "data"
+      ]
+    },
+    {
+      "id": "data",
+      "type": "data",
+      "firewall": {
+        "level": 0,
+        "exploit_ids": []
+      },
+      "data": {
+        "value": 24,
+        "verified": true
+      },
+      "traffic_level": 0,
+      "log_present": false,
+      "av_route": [],
+      "edges": [
+        "entry"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+### A 4-week PvP season (§1.5.2, §2.4 `seasons`).
+class: Season
+table: seasons
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  startsAt: DateTime
+  endsAt: DateTime
+
+indexes:
+  seasons_ends_at_idx:
+    fields: endsAt

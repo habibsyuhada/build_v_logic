@@ -1,0 +1,7 @@
+### Thrown when a submitted blueprint's virus design fails validation
+### (§2.5) — malformed JSON, over budget, or a locked block. Same checks
+### as an attack submission (`VirusSubmissionValidator`), since a
+### blueprint is just a saved virus design.
+exception: BlueprintValidationException
+fields:
+  errors: List<String>

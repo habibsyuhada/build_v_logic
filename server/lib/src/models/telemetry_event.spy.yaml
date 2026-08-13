@@ -1,0 +1,22 @@
+### One client telemetry event (§2.6: "Telemetry client (event funnel):
+### install → tutorial step N → first battle → D1/D7 return. Kirim
+### batched ke endpoint sendiri"). Ingested via `TelemetryEndpoint.ingest`,
+### batched client-side by `TelemetryClient` before sending.
+class: TelemetryEvent
+table: telemetry_events
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### Nullable: some funnel events (e.g. first app open) happen before a
+  ### Player row exists yet.
+  player: Player?, relation(optional, onDelete=SetNull)
+
+  eventType: String
+  propertiesJson: String, defaultModel='{}'
+  occurredAt: DateTime
+
+  receivedAt: DateTime, defaultModel=now
+
+indexes:
+  telemetry_events_type_idx:
+    fields: eventType

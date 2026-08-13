@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m3",
+  "chapter": 2,
+  "index_in_chapter": 3,
+  "title": "Ch2.3 — unlock: random_chance",
+  "network_id": "net_mission_ch2_m3",
+  "unlocks_blocks": [
+    "random_chance"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 99
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `random_chance`. Wire it in."
+  ]
+}

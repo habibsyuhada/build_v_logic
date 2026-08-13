@@ -1,0 +1,24 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+.pub-cache/
+.pub/
+*.iml
+
+# Flutter (app/)
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/android/local.properties
+
+# Serverpod generated (Phase 4)
+server/generated/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local env
+.env
+*.env.local

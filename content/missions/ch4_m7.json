@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m7",
+  "chapter": 4,
+  "index_in_chapter": 7,
+  "title": "Ch4.7 — unlock: noise_gt",
+  "network_id": "net_mission_ch4_m7",
+  "unlocks_blocks": [
+    "noise_gt"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 141
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `noise_gt`. Wire it in."
+  ]
+}

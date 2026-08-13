@@ -1,0 +1,21 @@
+### A player's battle pass progress for one [Season] (§1.6). Tier is
+### derived from `xp` (see `BattlePassTierCalculator`), not stored
+### directly, so a tier-curve rebalance never needs a data migration.
+class: BattlePassProgress
+table: battle_pass_progress
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+  season: Season?, relation(onDelete=Cascade)
+
+  xp: int, defaultModel=0
+
+  ### Whether the premium track was purchased for this season — the free
+  ### track's rewards are always available regardless (§1.6: "Tidak ada
+  ### blok/kapasitas di track premium").
+  hasPremium: bool, defaultModel=false
+
+indexes:
+  battle_pass_progress_player_season_idx:
+    fields: playerId, seasonId
+    unique: true

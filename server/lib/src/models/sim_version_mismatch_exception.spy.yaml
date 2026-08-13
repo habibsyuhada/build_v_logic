@@ -1,0 +1,7 @@
+### Thrown when a client submits a PvP attack with an incompatible
+### `sim_core`/content version (§2.7: "paksa update untuk PvP"). PvE never
+### throws this — only PvP submission checks it.
+exception: SimVersionMismatchException
+fields:
+  clientSimVersion: int
+  serverSimVersion: int

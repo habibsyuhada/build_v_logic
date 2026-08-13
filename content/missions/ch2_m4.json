@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m4",
+  "chapter": 2,
+  "index_in_chapter": 4,
+  "title": "Ch2.4 — unlock: tick_gt",
+  "network_id": "net_mission_ch2_m4",
+  "unlocks_blocks": [
+    "tick_gt"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 102
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `tick_gt`. Wire it in."
+  ]
+}

@@ -1,0 +1,11 @@
+name: content_schema
+description: Models and validators for PAYLOAD JSON content (blocks, missions, networks, balance).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dev_dependencies:
+  test: ^1.25.0
+resolution: workspace

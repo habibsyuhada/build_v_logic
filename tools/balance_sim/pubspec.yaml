@@ -1,0 +1,12 @@
+name: balance_sim
+description: CLI to simulate balance changes against content/blocks.json before committing them.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  content_schema: ^0.1.0
+  sim_core: ^0.1.0
+resolution: workspace

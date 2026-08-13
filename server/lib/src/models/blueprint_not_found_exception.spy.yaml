@@ -1,0 +1,2 @@
+### Thrown when a blueprint id doesn't exist or isn't approved yet.
+exception: BlueprintNotFoundException

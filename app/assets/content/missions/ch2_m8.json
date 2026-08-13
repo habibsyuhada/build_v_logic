@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m8",
+  "chapter": 2,
+  "index_in_chapter": 8,
+  "title": "Ch2.8 — unlock: move_back",
+  "network_id": "net_mission_ch2_m8",
+  "unlocks_blocks": [
+    "move_back"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 114
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `move_back`. Wire it in."
+  ]
+}

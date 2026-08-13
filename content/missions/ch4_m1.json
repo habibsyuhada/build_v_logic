@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m1",
+  "chapter": 4,
+  "index_in_chapter": 1,
+  "title": "Ch4.1 — unlock: counter_inc",
+  "network_id": "net_mission_ch4_m1",
+  "unlocks_blocks": [
+    "counter_inc"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 123
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `counter_inc`. Wire it in."
+  ]
+}

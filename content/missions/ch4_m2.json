@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m2",
+  "chapter": 4,
+  "index_in_chapter": 2,
+  "title": "Ch4.2 — unlock: counter_gt",
+  "network_id": "net_mission_ch4_m2",
+  "unlocks_blocks": [
+    "counter_gt"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 126
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `counter_gt`. Wire it in."
+  ]
+}

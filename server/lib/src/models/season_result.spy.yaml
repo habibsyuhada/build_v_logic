@@ -1,0 +1,16 @@
+### A player's final standing in a completed [Season] (§2.4
+### `season_results`), snapshotted at rollover before `seasonRating`
+### resets.
+class: SeasonResult
+table: season_results
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  season: Season?, relation(onDelete=Cascade)
+  player: Player?, relation(onDelete=Cascade)
+
+  finalRating: int
+  rank: int
+
+indexes:
+  season_results_season_rank_idx:
+    fields: seasonId, rank

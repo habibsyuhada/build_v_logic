@@ -1,0 +1,6 @@
+### Lifecycle of an IAP purchase (§2.4 `purchases`).
+enum: PurchaseState
+values:
+  - pending
+  - verified
+  - failed

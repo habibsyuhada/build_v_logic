@@ -1,0 +1,8 @@
+### Moderation lifecycle for a published blueprint (§2.5: "melalui filter
+### profanity + laporan pemain + moderation_state").
+enum: BlueprintModerationState
+values:
+  - pending
+  - approved
+  - rejected
+  - flagged
