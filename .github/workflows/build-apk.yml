@@ -9,6 +9,15 @@ on:
       - "packages/**"
       - "content/**"
       - ".github/workflows/build-apk.yml"
+  # `workflow_dispatch` only becomes runnable once this file lands on the
+  # default branch (a GitHub platform restriction, not something fixable
+  # in this file), so `pull_request` is what lets a build run pre-merge.
+  pull_request:
+    paths:
+      - "app/**"
+      - "packages/**"
+      - "content/**"
+      - ".github/workflows/build-apk.yml"
 
 jobs:
   build-apk:
