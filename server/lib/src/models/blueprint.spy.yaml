@@ -1,0 +1,26 @@
+### A published virus design (§1.5.4, §2.4 `blueprints`). Other players
+### see its *results* (replays against their own defense) but must
+### reverse-engineer it (§1.5.4: replay 3x per block to "read" it) before
+### they can copy it — see `BlueprintReveal`.
+class: Blueprint
+table: blueprints
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+
+  title: String
+
+  ### The virus program, as JSON (content_schema.VirusDef). Other players
+  ### never see this directly until fully reverse-engineered.
+  virusDefJson: String
+
+  likes: int, defaultModel=0
+  plays: int, defaultModel=0
+
+  publishedAt: DateTime, defaultModel=now
+
+  moderationState: BlueprintModerationState, defaultModel=pending
+
+indexes:
+  blueprints_moderation_state_idx:
+    fields: moderationState

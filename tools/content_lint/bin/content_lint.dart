@@ -75,6 +75,16 @@ Future<void> main(List<String> args) async {
     report('missions/', validateMissionSet(missions));
   }
 
+  final shopFile = File('${contentDir.path}/shop.json');
+  if (shopFile.existsSync()) {
+    final raw = jsonDecode(await shopFile.readAsString()) as List;
+    final skus = raw.map((e) => SkuDef.fromJson(e as Map<String, dynamic>)).toList();
+    report('shop.json', validateSkuSet(skus));
+  } else {
+    stdout.writeln('WARN  [shop.json] file not found, skipping');
+    hadWarnings = true;
+  }
+
   if (blockCatalog.isNotEmpty) {
     final missionsGlob = Directory('${contentDir.path}/virus_examples');
     if (missionsGlob.existsSync()) {

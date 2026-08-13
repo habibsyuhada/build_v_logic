@@ -340,3 +340,92 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   not verifiable in this environment** — it requires real human
   playtesters. See "Execution environment constraints" above;
   `docs/ACCEPTANCE.md` marks it ⛔ rather than claiming a pass.
+
+## Phase 5
+
+- **All six new meta/economy systems keep the Phase 4 pattern**: pure,
+  `Session`-free business logic in `server/lib/src/business/`
+  (`ProfanityFilter`, `ReverseEngineerProgress`, `DailyContractGenerator`,
+  `SeasonRollover`, `BattlePassTierCalculator`, `ReceiptValidator`), each
+  with real unit tests (41 new tests, 80 total in `server/test/business/`
+  including Phase 4's), with thin `Endpoint` classes
+  (`BlueprintEndpoint`, `ContractEndpoint`, `SeasonEndpoint`,
+  `ShopEndpoint`, `TelemetryEndpoint`) doing only auth/lookup/persist glue
+  around them. Same reasoning as Phase 4: it's the only way to get real
+  coverage without a live database here.
+- **Blueprint moderation only reaches `pending`→ automated states.**
+  §2.5 describes filtering "melalui filter profanity + laporan pemain +
+  moderation_state" — `BlueprintEndpoint.publish` runs the profanity
+  filter on the title (rejecting outright via
+  `BlueprintTitleRejectedException` rather than publishing then flagging,
+  since that's strictly safer and just as simple), and every blueprint
+  starts `moderationState=pending`. The player-report queue and a human
+  moderator UI to move a blueprint to `approved`/`rejected`/`flagged` are
+  out of scope here — there's no moderator dashboard to build that
+  workflow against, and a fake one would just be unverified surface area.
+  The schema (`BlueprintModerationState` enum, indexed column) is real
+  and ready for that queue to be layered on.
+- **`SimpleWordlistProfanityFilter.defaultFilter`'s banned-word set is a
+  small placeholder**, not a production moderation wordlist/ML
+  classifier. It's the intentionally-swappable seam (constructor takes
+  any `Set<String>`), same spirit as `ReceiptValidator`.
+- **Reverse-engineer progress counts total DAG nodes as "blocks"**
+  (`VirusDef.program.nodes.length`), not distinct block *types* — matches
+  §1.5.4's "replay 3x untuk 1 blok" read literally as one reveal unit per
+  block instance in the design, which is also the simpler and
+  monotonically-increasing definition (a design can't lose blocks between
+  reveals).
+- **Daily contract network topology is a fixed 8-node template**
+  (entry → 3 relays → firewalled gate → data node, plus 2 unused spare
+  relays for visual variety), with only firewall level (1-4) and data
+  value (20-49) varying by date-derived seed. `DailyContractGenerator` is
+  a pure function of the date string, verified deterministic and collision-
+  free across dates in tests. A richer topology generator (varying node
+  count/shape) is future work, not required for the "one puzzle per day,
+  same for everyone" AC.
+- **Season rollover is endpoint-triggered (`SeasonEndpoint.rolloverIfDue`),
+  not cron-triggered.** §1.5.2 implies a scheduled 4-week rollover; this
+  environment has no live deployment to attach a real Serverpod
+  `FutureCall`/cron job to (same "never booted" constraint as Phase 4).
+  `rolloverIfDue` is pure-logic-backed (`SeasonRollover.isDue`) and
+  idempotent to call repeatedly, so wiring it to an actual scheduler
+  later is a one-line addition, not a rewrite.
+- **Battle pass premium track purchase grants immediately and
+  permanently** for whichever season is current at purchase time — no
+  handling of "buy premium mid-season vs next season" nuance beyond
+  "premium applies to the season you bought it in." Simplest reading of
+  §1.6 consistent with "no blok/kapasitas di track premium, cosmetics
+  only."
+- **IAP purchases always persist a `Purchase` row recording the outcome**,
+  successful or not, and only grant the entitlement (keys credited,
+  premium track flagged) when `ReceiptValidator.verify` reports valid.
+  `ShopEndpoint.receiptValidator` defaults to
+  `AlwaysRejectReceiptValidator` — see the Phase 4-referenced pattern in
+  `receipt_validator.dart`'s own doc comment: this environment has no
+  live Google Play / App Store service-account credentials, and a
+  validator that silently approved everything would be a dangerous
+  default to ship. The AC "purchase sandbox berhasil dua platform store
+  API" is therefore **not verifiable in this environment** — see
+  `docs/ACCEPTANCE.md`.
+- **Telemetry events are ingested and stored, not visualized.**
+  `TelemetryEndpoint.ingest` accepts a batch of client-shaped
+  `TelemetryEvent` rows (attaching the authenticated player if any —
+  events like first app open predate login) and persists them. §2.6's
+  "event funnel tampil di dashboard analitik" needs a live
+  analytics/BI tool (Grafana, Amplitude, etc.) reading this table, which
+  doesn't exist in this environment — marked **not verifiable** in
+  `docs/ACCEPTANCE.md`. The ingestion path itself, which is the part
+  code can own, is real and covered by `dart analyze`.
+- **`content/shop.json` (5 keys-pack SKUs + 1 battle-pass SKU) is bundled
+  into `server/content/` like `blocks.json`/`balance.json`** (same
+  manual-sync caveat as the Phase 2/4 entries), and validated by
+  `tools/content_lint` via the new `validateSkuSet` check. It is *not*
+  copied into `app/assets/content/` — no shop UI was built this phase
+  (see below), so there's nothing client-side to consume it yet.
+- **No client-side UI was built for blueprints, contracts, season/battle
+  pass, or the shop.** Given the scope of six new backend systems, effort
+  went into real, tested business logic and endpoints over placeholder
+  screens with nothing behind them. The existing Phase 3 "coming soon"
+  routes for these features are unchanged. This is a genuine gap against
+  §5's Phase 5 scope, not a completed-but-untested corner — recorded
+  here rather than silently left implicit.

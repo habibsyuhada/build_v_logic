@@ -144,3 +144,44 @@ All notable changes to the PAYLOAD project, organized by execution phase
   **Not verified**: the server booting against a live database — no
   Docker daemon is available in this environment. See
   `docs/ACCEPTANCE.md` and `docs/DECISIONS.md`.
+
+## Phase 5 — Meta & economy
+
+- `content_schema`: `SkuDef`/`SkuType` model + `validateSkuSet` validator
+  (5 tests). `content/shop.json` authored (5 keys-pack SKUs + 1
+  battle-pass SKU), validated by `tools/content_lint`'s new shop.json
+  check, bundled into `server/content/` alongside `blocks.json`/
+  `balance.json`.
+- New data models (`server/lib/src/models/*.spy.yaml`): `Blueprint`,
+  `BlueprintReveal`, `BlueprintModerationState` (enum); `DailyContract`,
+  `ContractScore`; `Season`, `SeasonResult`; `Purchase`, `PurchaseState`
+  (enum); `BattlePassProgress`; `TelemetryEvent` — plus exceptions
+  `BlueprintNotFoundException`, `BlueprintNotRevealedException`,
+  `BlueprintTitleRejectedException`, `BlueprintValidationException`,
+  `SkuNotFoundException`. `serverpod generate` runs clean.
+- Six new pure business-logic classes in `server/lib/src/business/`,
+  each with real unit tests (41 new tests total, none needing a live
+  database): `ProfanityFilter`/`SimpleWordlistProfanityFilter`,
+  `ReverseEngineerProgress`, `DailyContractGenerator`, `SeasonRollover`,
+  `BattlePassTierCalculator`, `ReceiptValidator`/
+  `AlwaysRejectReceiptValidator`, plus a new `ServerContent` test for the
+  bundled `shop.json`.
+- New endpoints, following the Phase 4 thin-glue-over-pure-logic pattern:
+  - `BlueprintEndpoint`: `publish` (profanity filter + virus validation),
+    `listApproved`, `watchReplay` (reverse-engineer progress),
+    `copy` (gated on full reveal).
+  - `ContractEndpoint`: `today` (generates/persists the date-seeded daily
+    contract), `submitScore` (best-score upsert), `leaderboard`.
+  - `SeasonEndpoint`: `current` (get-or-create), `rolloverIfDue`
+    (snapshots ranked `SeasonResult`s and resets `seasonRating`),
+    `myProgress`/`addXp`/`myTier` (battle pass).
+  - `ShopEndpoint`: `listSkus`, `purchase` (verifies via
+    `ReceiptValidator`, grants keys or premium track only on success).
+  - `TelemetryEndpoint`: `ingest` (batched event persistence).
+- `dart analyze --fatal-infos` clean across `server/`. **Not verified**:
+  any of the new endpoints against a live database (same no-Docker-daemon
+  constraint as Phase 4), real store IAP sandboxes, or a live analytics
+  dashboard for the telemetry funnel. See `docs/ACCEPTANCE.md` and
+  `docs/DECISIONS.md`.
+- **Known gap**: no client-side UI for any of these five systems this
+  phase — see `docs/DECISIONS.md` "Phase 5".

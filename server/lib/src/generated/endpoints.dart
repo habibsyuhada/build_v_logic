@@ -14,12 +14,18 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../endpoints/battle_endpoint.dart' as _i4;
-import '../endpoints/defense_endpoint.dart' as _i5;
-import '../endpoints/player_endpoint.dart' as _i6;
+import '../endpoints/blueprint_endpoint.dart' as _i5;
+import '../endpoints/contract_endpoint.dart' as _i6;
+import '../endpoints/defense_endpoint.dart' as _i7;
+import '../endpoints/player_endpoint.dart' as _i8;
+import '../endpoints/season_endpoint.dart' as _i9;
+import '../endpoints/shop_endpoint.dart' as _i10;
+import '../endpoints/telemetry_endpoint.dart' as _i11;
+import 'package:payload_server/src/generated/telemetry_event.dart' as _i12;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i7;
+    as _i13;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i8;
+    as _i14;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -43,16 +49,46 @@ class Endpoints extends _i1.EndpointDispatch {
           'battle',
           null,
         ),
-      'defense': _i5.DefenseEndpoint()
+      'blueprint': _i5.BlueprintEndpoint()
+        ..initialize(
+          server,
+          'blueprint',
+          null,
+        ),
+      'contract': _i6.ContractEndpoint()
+        ..initialize(
+          server,
+          'contract',
+          null,
+        ),
+      'defense': _i7.DefenseEndpoint()
         ..initialize(
           server,
           'defense',
           null,
         ),
-      'player': _i6.PlayerEndpoint()
+      'player': _i8.PlayerEndpoint()
         ..initialize(
           server,
           'player',
+          null,
+        ),
+      'season': _i9.SeasonEndpoint()
+        ..initialize(
+          server,
+          'season',
+          null,
+        ),
+      'shop': _i10.ShopEndpoint()
+        ..initialize(
+          server,
+          'shop',
+          null,
+        ),
+      'telemetry': _i11.TelemetryEndpoint()
+        ..initialize(
+          server,
+          'telemetry',
           null,
         ),
     };
@@ -315,6 +351,160 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['blueprint'] = _i1.EndpointConnector(
+      name: 'blueprint',
+      endpoint: endpoints['blueprint']!,
+      methodConnectors: {
+        'publish': _i1.MethodConnector(
+          name: 'publish',
+          params: {
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'virusDefJson': _i1.ParameterDescription(
+              name: 'virusDefJson',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['blueprint'] as _i5.BlueprintEndpoint).publish(
+                    session,
+                    title: params['title'],
+                    virusDefJson: params['virusDefJson'],
+                  ),
+        ),
+        'listApproved': _i1.MethodConnector(
+          name: 'listApproved',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['blueprint'] as _i5.BlueprintEndpoint)
+                  .listApproved(
+                    session,
+                    limit: params['limit'],
+                  ),
+        ),
+        'watchReplay': _i1.MethodConnector(
+          name: 'watchReplay',
+          params: {
+            'blueprintId': _i1.ParameterDescription(
+              name: 'blueprintId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['blueprint'] as _i5.BlueprintEndpoint).watchReplay(
+                    session,
+                    blueprintId: params['blueprintId'],
+                  ),
+        ),
+        'copy': _i1.MethodConnector(
+          name: 'copy',
+          params: {
+            'blueprintId': _i1.ParameterDescription(
+              name: 'blueprintId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['blueprint'] as _i5.BlueprintEndpoint).copy(
+                session,
+                blueprintId: params['blueprintId'],
+              ),
+        ),
+      },
+    );
+    connectors['contract'] = _i1.EndpointConnector(
+      name: 'contract',
+      endpoint: endpoints['contract']!,
+      methodConnectors: {
+        'today': _i1.MethodConnector(
+          name: 'today',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['contract'] as _i6.ContractEndpoint).today(
+                session,
+              ),
+        ),
+        'submitScore': _i1.MethodConnector(
+          name: 'submitScore',
+          params: {
+            'contractId': _i1.ParameterDescription(
+              name: 'contractId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'score': _i1.ParameterDescription(
+              name: 'score',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['contract'] as _i6.ContractEndpoint).submitScore(
+                    session,
+                    contractId: params['contractId'],
+                    score: params['score'],
+                  ),
+        ),
+        'leaderboard': _i1.MethodConnector(
+          name: 'leaderboard',
+          params: {
+            'contractId': _i1.ParameterDescription(
+              name: 'contractId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['contract'] as _i6.ContractEndpoint).leaderboard(
+                    session,
+                    contractId: params['contractId'],
+                    limit: params['limit'],
+                  ),
+        ),
+      },
+    );
     connectors['defense'] = _i1.EndpointConnector(
       name: 'defense',
       endpoint: endpoints['defense']!,
@@ -332,7 +522,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['defense'] as _i5.DefenseEndpoint).save(
+              ) async => (endpoints['defense'] as _i7.DefenseEndpoint).save(
                 session,
                 networkDefJson: params['networkDefJson'],
               ),
@@ -357,7 +547,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['player'] as _i6.PlayerEndpoint).createGuest(
+                  (endpoints['player'] as _i8.PlayerEndpoint).createGuest(
                     session,
                     handle: params['handle'],
                   ),
@@ -370,7 +560,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['player'] as _i6.PlayerEndpoint).me(session),
+                  (endpoints['player'] as _i8.PlayerEndpoint).me(session),
         ),
         'updateSettings': _i1.MethodConnector(
           name: 'updateSettings',
@@ -386,16 +576,146 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['player'] as _i6.PlayerEndpoint).updateSettings(
+                  (endpoints['player'] as _i8.PlayerEndpoint).updateSettings(
                     session,
                     settingsJson: params['settingsJson'],
                   ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i7.Endpoints()
+    connectors['season'] = _i1.EndpointConnector(
+      name: 'season',
+      endpoint: endpoints['season']!,
+      methodConnectors: {
+        'current': _i1.MethodConnector(
+          name: 'current',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['season'] as _i9.SeasonEndpoint).current(session),
+        ),
+        'rolloverIfDue': _i1.MethodConnector(
+          name: 'rolloverIfDue',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['season'] as _i9.SeasonEndpoint)
+                  .rolloverIfDue(session),
+        ),
+        'myProgress': _i1.MethodConnector(
+          name: 'myProgress',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['season'] as _i9.SeasonEndpoint).myProgress(
+                session,
+              ),
+        ),
+        'addXp': _i1.MethodConnector(
+          name: 'addXp',
+          params: {
+            'xp': _i1.ParameterDescription(
+              name: 'xp',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['season'] as _i9.SeasonEndpoint).addXp(
+                session,
+                xp: params['xp'],
+              ),
+        ),
+        'myTier': _i1.MethodConnector(
+          name: 'myTier',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['season'] as _i9.SeasonEndpoint).myTier(session),
+        ),
+      },
+    );
+    connectors['shop'] = _i1.EndpointConnector(
+      name: 'shop',
+      endpoint: endpoints['shop']!,
+      methodConnectors: {
+        'listSkus': _i1.MethodConnector(
+          name: 'listSkus',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['shop'] as _i10.ShopEndpoint).listSkus(session),
+        ),
+        'purchase': _i1.MethodConnector(
+          name: 'purchase',
+          params: {
+            'sku': _i1.ParameterDescription(
+              name: 'sku',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'storeReceipt': _i1.ParameterDescription(
+              name: 'storeReceipt',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['shop'] as _i10.ShopEndpoint).purchase(
+                session,
+                sku: params['sku'],
+                storeReceipt: params['storeReceipt'],
+              ),
+        ),
+      },
+    );
+    connectors['telemetry'] = _i1.EndpointConnector(
+      name: 'telemetry',
+      endpoint: endpoints['telemetry']!,
+      methodConnectors: {
+        'ingest': _i1.MethodConnector(
+          name: 'ingest',
+          params: {
+            'events': _i1.ParameterDescription(
+              name: 'events',
+              type: _i1.getType<List<_i12.TelemetryEvent>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['telemetry'] as _i11.TelemetryEndpoint).ingest(
+                    session,
+                    events: params['events'],
+                  ),
+        ),
+      },
+    );
+    modules['serverpod_auth_idp'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i8.Endpoints()
+    modules['serverpod_auth_core'] = _i14.Endpoints()
       ..initializeEndpoints(server);
   }
 }

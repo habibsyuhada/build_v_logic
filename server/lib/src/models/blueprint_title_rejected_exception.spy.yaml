@@ -1,0 +1,2 @@
+### Thrown when a blueprint title fails the profanity filter (§2.5).
+exception: BlueprintTitleRejectedException

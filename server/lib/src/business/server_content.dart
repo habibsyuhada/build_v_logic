@@ -16,9 +16,12 @@ class ServerContent {
   final List<BlockDef> blocks;
   final Map<String, BlockDef> blocksById;
   final BalanceConfig balance;
+  final List<SkuDef> skus;
+  final Map<String, SkuDef> skusById;
 
-  ServerContent._({required this.blocks, required this.balance})
-      : blocksById = {for (final b in blocks) b.id: b};
+  ServerContent._({required this.blocks, required this.balance, required this.skus})
+      : blocksById = {for (final b in blocks) b.id: b},
+        skusById = {for (final s in skus) s.id: s};
 
   static ServerContent? _instance;
 
@@ -40,9 +43,16 @@ class ServerContent {
         jsonDecode(File('$contentDir/balance.json').readAsStringSync()) as Map<String, dynamic>;
     final balance = BalanceConfig.fromJson(balanceRaw);
 
-    return ServerContent._(blocks: blocks, balance: balance);
+    final skusRaw = jsonDecode(File('$contentDir/shop.json').readAsStringSync()) as List;
+    final skus = skusRaw.map((e) => SkuDef.fromJson(e as Map<String, dynamic>)).toList();
+
+    return ServerContent._(blocks: blocks, balance: balance, skus: skus);
   }
 
-  factory ServerContent.forTesting({required List<BlockDef> blocks, required BalanceConfig balance}) =>
-      ServerContent._(blocks: blocks, balance: balance);
+  factory ServerContent.forTesting({
+    required List<BlockDef> blocks,
+    required BalanceConfig balance,
+    List<SkuDef> skus = const [],
+  }) =>
+      ServerContent._(blocks: blocks, balance: balance, skus: skus);
 }

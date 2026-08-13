@@ -1,0 +1,18 @@
+### A player's best score on a given [DailyContract] (§2.4
+### `contract_scores`), for the daily global leaderboard.
+class: ContractScore
+table: contract_scores
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+  contract: DailyContract?, relation(onDelete=Cascade)
+
+  score: int
+  achievedAt: DateTime, defaultModel=now
+
+indexes:
+  contract_scores_player_contract_idx:
+    fields: playerId, contractId
+    unique: true
+  contract_scores_leaderboard_idx:
+    fields: contractId, score

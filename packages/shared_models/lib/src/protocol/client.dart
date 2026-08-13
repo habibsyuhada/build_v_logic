@@ -17,9 +17,17 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:shared_models/src/protocol/battle.dart' as _i5;
-import 'package:shared_models/src/protocol/defense.dart' as _i6;
-import 'package:shared_models/src/protocol/player.dart' as _i7;
-import 'protocol.dart' as _i8;
+import 'package:shared_models/src/protocol/blueprint.dart' as _i6;
+import 'package:shared_models/src/protocol/blueprint_reveal.dart' as _i7;
+import 'package:shared_models/src/protocol/daily_contract.dart' as _i8;
+import 'package:shared_models/src/protocol/contract_score.dart' as _i9;
+import 'package:shared_models/src/protocol/defense.dart' as _i10;
+import 'package:shared_models/src/protocol/player.dart' as _i11;
+import 'package:shared_models/src/protocol/season.dart' as _i12;
+import 'package:shared_models/src/protocol/battle_pass_progress.dart' as _i13;
+import 'package:shared_models/src/protocol/purchase.dart' as _i14;
+import 'package:shared_models/src/protocol/telemetry_event.dart' as _i15;
+import 'protocol.dart' as _i16;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -283,6 +291,114 @@ class EndpointBattle extends _i2.EndpointRef {
       );
 }
 
+/// Blueprint sharing + reverse-engineer loop (§1.5.4, §2.5).
+///
+/// A published blueprint's title goes through [ProfanityFilter] before
+/// being stored, and starts `moderationState=pending` — a real deployment
+/// would also route it through a player-report queue and a human
+/// moderator pass to reach `approved`/`rejected`/`flagged`; that queue and
+/// the moderator tooling that drives it are outside this environment's
+/// scope (no dashboard to build it against), so `moderationState` here
+/// only advances via [publish]'s automated profanity gate.
+/// {@category Endpoint}
+class EndpointBlueprint extends _i2.EndpointRef {
+  EndpointBlueprint(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'blueprint';
+
+  /// Publishes a new blueprint. The title is checked against the
+  /// profanity filter and the design against the same validator attack
+  /// submissions use (§2.5: never trust the client's own unlock/size
+  /// bookkeeping).
+  _i3.Future<_i6.Blueprint> publish({
+    required String title,
+    required String virusDefJson,
+  }) => caller.callServerEndpoint<_i6.Blueprint>(
+    'blueprint',
+    'publish',
+    {
+      'title': title,
+      'virusDefJson': virusDefJson,
+    },
+  );
+
+  /// Lists approved blueprints, most recently published first.
+  _i3.Future<List<_i6.Blueprint>> listApproved({required int limit}) =>
+      caller.callServerEndpoint<List<_i6.Blueprint>>(
+        'blueprint',
+        'listApproved',
+        {'limit': limit},
+      );
+
+  /// Records that the calling player watched one replay of [blueprintId],
+  /// advancing their reverse-engineer progress (§1.5.4: 3 replays per
+  /// block). Returns the updated reveal state.
+  _i3.Future<_i7.BlueprintReveal> watchReplay({required String blueprintId}) =>
+      caller.callServerEndpoint<_i7.BlueprintReveal>(
+        'blueprint',
+        'watchReplay',
+        {'blueprintId': blueprintId},
+      );
+
+  /// Returns the blueprint's virus design JSON once fully
+  /// reverse-engineered. Throws [BlueprintNotRevealedException] otherwise.
+  _i3.Future<String> copy({required String blueprintId}) =>
+      caller.callServerEndpoint<String>(
+        'blueprint',
+        'copy',
+        {'blueprintId': blueprintId},
+      );
+}
+
+/// Daily contract puzzle + global leaderboard (§1.5.5, §2.4).
+/// {@category Endpoint}
+class EndpointContract extends _i2.EndpointRef {
+  EndpointContract(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'contract';
+
+  /// Returns today's contract, generating and persisting it on first
+  /// request of the day (deterministic from the date, so a concurrent
+  /// second request racing this one would generate the identical network —
+  /// the unique index on `contractDate` makes the second insert redundant
+  /// rather than conflicting in a way that loses data).
+  _i3.Future<_i8.DailyContract> today() =>
+      caller.callServerEndpoint<_i8.DailyContract>(
+        'contract',
+        'today',
+        {},
+      );
+
+  /// Records the calling player's score if it beats their previous best
+  /// for [contractId].
+  _i3.Future<_i9.ContractScore> submitScore({
+    required String contractId,
+    required int score,
+  }) => caller.callServerEndpoint<_i9.ContractScore>(
+    'contract',
+    'submitScore',
+    {
+      'contractId': contractId,
+      'score': score,
+    },
+  );
+
+  /// Top scores for [contractId], highest first.
+  _i3.Future<List<_i9.ContractScore>> leaderboard({
+    required String contractId,
+    required int limit,
+  }) => caller.callServerEndpoint<List<_i9.ContractScore>>(
+    'contract',
+    'leaderboard',
+    {
+      'contractId': contractId,
+      'limit': limit,
+    },
+  );
+}
+
 /// Defense builder backend (§1.4, §2.5). Attacks always target the most
 /// recent `isActive` snapshot — never a defense mid-edit (§2.3).
 /// {@category Endpoint}
@@ -295,8 +411,8 @@ class EndpointDefense extends _i2.EndpointRef {
   /// Validates and saves a new defense version, activating it and
   /// deactivating any previous active version. Throws
   /// [DefenseValidationException] if the submission fails validation.
-  _i3.Future<_i6.Defense> save({required String networkDefJson}) =>
-      caller.callServerEndpoint<_i6.Defense>(
+  _i3.Future<_i10.Defense> save({required String networkDefJson}) =>
+      caller.callServerEndpoint<_i10.Defense>(
         'defense',
         'save',
         {'networkDefJson': networkDefJson},
@@ -331,7 +447,7 @@ class EndpointPlayer extends _i2.EndpointRef {
 
   /// The calling player's profile, or null if unauthenticated or no
   /// [Player] row exists yet for this session's `AuthUser`.
-  _i3.Future<_i7.Player?> me() => caller.callServerEndpoint<_i7.Player?>(
+  _i3.Future<_i11.Player?> me() => caller.callServerEndpoint<_i11.Player?>(
     'player',
     'me',
     {},
@@ -339,11 +455,137 @@ class EndpointPlayer extends _i2.EndpointRef {
 
   /// Updates the calling player's accessibility/audio/etc. settings blob
   /// (§1.8) — stored opaque, the client owns the schema.
-  _i3.Future<_i7.Player?> updateSettings({required String settingsJson}) =>
-      caller.callServerEndpoint<_i7.Player?>(
+  _i3.Future<_i11.Player?> updateSettings({required String settingsJson}) =>
+      caller.callServerEndpoint<_i11.Player?>(
         'player',
         'updateSettings',
         {'settingsJson': settingsJson},
+      );
+}
+
+/// Season lifecycle + battle pass progress (§1.5.2, §1.6, §2.4).
+///
+/// Rollover is normally driven by a scheduled job (e.g. an hourly cron
+/// hitting [rolloverIfDue]) rather than a player request; it's exposed as
+/// a plain endpoint method here since this environment has no live
+/// deployment to attach a real cron trigger to — see docs/DECISIONS.md.
+/// {@category Endpoint}
+class EndpointSeason extends _i2.EndpointRef {
+  EndpointSeason(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'season';
+
+  /// The currently-running season, creating the very first one if none
+  /// exists yet.
+  _i3.Future<_i12.Season> current() => caller.callServerEndpoint<_i12.Season>(
+    'season',
+    'current',
+    {},
+  );
+
+  /// If the current season has ended, snapshots every player's
+  /// `seasonRating` into ranked [SeasonResult] rows, resets it to the
+  /// default, and starts the next season. Returns the new season, or the
+  /// still-running one if rollover wasn't due.
+  _i3.Future<_i12.Season> rolloverIfDue() =>
+      caller.callServerEndpoint<_i12.Season>(
+        'season',
+        'rolloverIfDue',
+        {},
+      );
+
+  /// The calling player's battle pass progress for the current season,
+  /// creating a fresh (tier-0) row on first access.
+  _i3.Future<_i13.BattlePassProgress> myProgress() =>
+      caller.callServerEndpoint<_i13.BattlePassProgress>(
+        'season',
+        'myProgress',
+        {},
+      );
+
+  /// Grants battle pass XP to the calling player for the current season
+  /// (called after a battle/mission/contract completion — not exposed as
+  /// a way to self-award, since a real deployment would only call this
+  /// from other endpoints server-side, not the client directly).
+  _i3.Future<_i13.BattlePassProgress> addXp({required int xp}) =>
+      caller.callServerEndpoint<_i13.BattlePassProgress>(
+        'season',
+        'addXp',
+        {'xp': xp},
+      );
+
+  /// The tier derived from the calling player's current season XP
+  /// (§1.6 — tier is presentation pacing, never stored directly).
+  _i3.Future<int> myTier() => caller.callServerEndpoint<int>(
+    'season',
+    'myTier',
+    {},
+  );
+}
+
+/// Shop catalog + IAP purchase verification (§1.6, §2.4, §2.5).
+///
+/// [receiptValidator] defaults to [AlwaysRejectReceiptValidator] — this
+/// environment has no live Google Play / App Store service-account
+/// credentials to verify a real receipt against, and a validator that
+/// silently approved everything would be a dangerous default to ship. A
+/// real deployment swaps this for store-specific implementations; every
+/// purchase submitted here is durably recorded either way (state
+/// `verified` or `failed`), so nothing about the entitlement-granting path
+/// downstream of verification needs to change when that swap happens.
+/// {@category Endpoint}
+class EndpointShop extends _i2.EndpointRef {
+  EndpointShop(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'shop';
+
+  /// The product catalog (`content/shop.json`), as a JSON array —
+  /// `content_schema.SkuDef` isn't a Serverpod-generated model, so it's
+  /// serialized the same way virus/network defs are elsewhere in this
+  /// API.
+  _i3.Future<String> listSkus() => caller.callServerEndpoint<String>(
+    'shop',
+    'listSkus',
+    {},
+  );
+
+  /// Submits a purchase for server-side verification. Always persists a
+  /// [Purchase] row recording the outcome; only grants the entitlement
+  /// (keys or battle pass premium) if verification succeeds.
+  _i3.Future<_i14.Purchase> purchase({
+    required String sku,
+    required String storeReceipt,
+  }) => caller.callServerEndpoint<_i14.Purchase>(
+    'shop',
+    'purchase',
+    {
+      'sku': sku,
+      'storeReceipt': storeReceipt,
+    },
+  );
+}
+
+/// Client telemetry ingestion (§2.6: "event funnel: install -> tutorial
+/// step N -> first battle -> D1/D7 return. Kirim batched ke endpoint
+/// sendiri"). Events are only ingested and stored here; a real dashboard
+/// (Grafana/Amplitude/etc.) reading this table for funnel visualization
+/// is outside this environment's scope — see docs/DECISIONS.md.
+/// {@category Endpoint}
+class EndpointTelemetry extends _i2.EndpointRef {
+  EndpointTelemetry(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'telemetry';
+
+  /// Ingests a batch of client-side events. `player` may be unauthenticated
+  /// (some funnel events, like first app open, happen before login).
+  _i3.Future<int> ingest({required List<_i15.TelemetryEvent> events}) =>
+      caller.callServerEndpoint<int>(
+        'telemetry',
+        'ingest',
+        {'events': events},
       );
 }
 
@@ -378,7 +620,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i8.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -390,8 +632,13 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     battle = EndpointBattle(this);
+    blueprint = EndpointBlueprint(this);
+    contract = EndpointContract(this);
     defense = EndpointDefense(this);
     player = EndpointPlayer(this);
+    season = EndpointSeason(this);
+    shop = EndpointShop(this);
+    telemetry = EndpointTelemetry(this);
     modules = Modules(this);
   }
 
@@ -401,9 +648,19 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointBattle battle;
 
+  late final EndpointBlueprint blueprint;
+
+  late final EndpointContract contract;
+
   late final EndpointDefense defense;
 
   late final EndpointPlayer player;
+
+  late final EndpointSeason season;
+
+  late final EndpointShop shop;
+
+  late final EndpointTelemetry telemetry;
 
   late final Modules modules;
 
@@ -412,8 +669,13 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'battle': battle,
+    'blueprint': blueprint,
+    'contract': contract,
     'defense': defense,
     'player': player,
+    'season': season,
+    'shop': shop,
+    'telemetry': telemetry,
   };
 
   @override

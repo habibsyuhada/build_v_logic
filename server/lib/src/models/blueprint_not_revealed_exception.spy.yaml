@@ -1,0 +1,6 @@
+### Thrown when a player tries to copy a blueprint before reverse-
+### engineering all of its blocks (§1.5.4).
+exception: BlueprintNotRevealedException
+fields:
+  blocksRevealed: int
+  blocksTotal: int

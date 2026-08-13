@@ -12,9 +12,29 @@ jwtRefresh:
 battle:
   - submitAttack:
   - getBattle:
+blueprint:
+  - publish:
+  - listApproved:
+  - watchReplay:
+  - copy:
+contract:
+  - today:
+  - submitScore:
+  - leaderboard:
 defense:
   - save:
 player:
   - createGuest:
   - me:
   - updateSettings:
+season:
+  - current:
+  - rolloverIfDue:
+  - myProgress:
+  - addXp:
+  - myTier:
+shop:
+  - listSkus:
+  - purchase:
+telemetry:
+  - ingest:

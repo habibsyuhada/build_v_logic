@@ -58,7 +58,15 @@ Known simplifications vs. the letter of §2.3/§2.4 (tracked, not silently dropp
 
 ## Phase 5 — Meta & ekonomi
 
-_Pending._
+| AC | Status | Note |
+|---|---|---|
+| Purchase sandbox berhasil dua platform store API | ⛔ | Requires live Google Play / App Store service-account credentials and their sandbox test tracks — not available in this sandboxed environment. See `docs/DECISIONS.md`. Substituted verification: `ShopEndpoint.purchase` always durably records the outcome (`Purchase.state`) and only grants the entitlement when `ReceiptValidator.verify` succeeds; `AlwaysRejectReceiptValidator` is the only implementation here, deliberately never approving (a validator that silently approved everything would be a dangerous default), tested in `receipt_validator_test.dart`. |
+| Moderation state blueprint berfungsi | ✅ | `Blueprint.moderationState` starts `pending`; `BlueprintEndpoint.publish` runs the submitted title through `SimpleWordlistProfanityFilter` (rejecting via `BlueprintTitleRejectedException`) and the virus design through the same `VirusSubmissionValidator` attacks use. Reverse-engineer gating (`BlueprintEndpoint.watchReplay`/`copy`) uses `ReverseEngineerProgress` (3 replays per block, tested). The player-report queue + human moderator UI to reach `approved`/`rejected`/`flagged` is out of scope — no moderator dashboard exists to build it against; see `docs/DECISIONS.md`. |
+| Event funnel tampil di dashboard analitik | ⛔ | Requires a live analytics/BI dashboard (Grafana, Amplitude, etc.) — none exists in this environment. Substituted verification: `TelemetryEndpoint.ingest` persists batched client events (attaching the authenticated player when present) — the part of the funnel that is actually code. |
+
+80/80 `server/test/business` tests pass (41 new this phase), `dart analyze` clean across `server/`. `serverpod generate` succeeds against all 11 new models + 5 new exceptions. `content/shop.json` (5 keys-pack SKUs + 1 battle-pass SKU) validates via `tools/content_lint`'s new `validateSkuSet` check, and `content_schema` gained 5 new tests for it.
+
+Known gap vs. the letter of §5 (tracked, not silently dropped — see `docs/DECISIONS.md` "Phase 5"): no client-side UI was built this phase for blueprints, contracts, season/battle pass, or the shop — all five new backend systems (`BlueprintEndpoint`, `ContractEndpoint`, `SeasonEndpoint`, `ShopEndpoint`, `TelemetryEndpoint`) are real and tested, but the app's "coming soon" placeholder routes for these features are unchanged from Phase 3.
 
 ## Phase 6 — Polish, LiveOps, Launch readiness
 

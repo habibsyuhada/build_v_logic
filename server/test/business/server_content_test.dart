@@ -19,4 +19,10 @@ void main() {
       expect(content.blocksById[block.id], same(block));
     }
   });
+
+  test('loads the real server/content/shop.json', () {
+    final content = ServerContent.instance;
+    expect(content.skus, isNotEmpty);
+    expect(content.skusById.length, content.skus.length);
+  });
 }
