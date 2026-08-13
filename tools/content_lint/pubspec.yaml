@@ -1,0 +1,14 @@
+name: content_lint
+description: CLI that validates content/ JSON (blocks, networks, missions, balance) against content_schema.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  content_schema: ^0.1.0
+
+dev_dependencies:
+  test: ^1.25.0
+resolution: workspace

@@ -1,0 +1,14 @@
+name: shared_models
+description: >
+  Client<->server DTOs. Placeholder until Phase 4 generates the real
+  Serverpod protocol classes; kept as a workspace member from Phase 0 so the
+  monorepo layout matches PAYLOAD_PLAN.md §2.2 from the start.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dev_dependencies:
+  test: ^1.25.0
+resolution: workspace

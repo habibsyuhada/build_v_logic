@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  analyze-and-test:
+    name: Analyze & test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: dart pub get (workspace)
+        run: dart pub get
+
+      - name: dart analyze
+        run: dart analyze --fatal-infos
+
+      - name: content_lint
+        run: dart run tools/content_lint/bin/content_lint.dart content
+
+      - name: dart test (all workspace packages)
+        run: |
+          set -e
+          for pkg in packages/content_schema packages/sim_core packages/shared_models tools/content_lint tools/bot_harness; do
+            if [ -d "$pkg/test" ]; then
+              echo "::group::dart test $pkg"
+              (cd "$pkg" && dart test)
+              echo "::endgroup::"
+            fi
+          done
+
+      - name: golden determinism hashes
+        run: |
+          if [ -f packages/sim_core/tool/print_golden_hashes.dart ]; then
+            dart run packages/sim_core/tool/print_golden_hashes.dart | tee golden-hashes-${{ matrix.os }}.txt
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: golden-hashes-${{ matrix.os }}
+          path: golden-hashes-${{ matrix.os }}.txt
+          if-no-files-found: ignore
+
+  # Compares the golden battle-log hashes produced on Linux vs macOS in the
+  # job above. A mismatch means sim_core is not actually deterministic
+  # cross-platform and is a release blocker (§4.2).
+  golden-cross-platform-check:
+    name: Golden hash cross-platform match
+    needs: analyze-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: golden-hashes-*
+          path: hashes
+      - name: Compare
+        run: |
+          if [ ! -d hashes ]; then echo "no golden hash artifacts yet"; exit 0; fi
+          cd hashes
+          files=$(find . -name '*.txt')
+          if [ -z "$files" ]; then echo "no golden hash files yet"; exit 0; fi
+          first=$(echo "$files" | head -1)
+          for f in $files; do
+            if ! diff -q "$first" "$f" > /dev/null; then
+              echo "Golden hash mismatch between $first and $f"
+              diff "$first" "$f" || true
+              exit 1
+            fi
+          done
+          echo "All golden hashes match across platforms."

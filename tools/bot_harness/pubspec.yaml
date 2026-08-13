@@ -1,0 +1,15 @@
+name: bot_harness
+description: Bot-vs-bot balance regression harness (§4.3) — archetypes x topologies x seeds win-rate report.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  content_schema: ^0.1.0
+  sim_core: ^0.1.0
+
+dev_dependencies:
+  test: ^1.25.0
+resolution: workspace
