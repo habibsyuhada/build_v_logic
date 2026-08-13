@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m3",
+  "chapter": 4,
+  "index_in_chapter": 3,
+  "title": "Ch4.3 — unlock: timer_after",
+  "network_id": "net_mission_ch4_m3",
+  "unlocks_blocks": [
+    "timer_after"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 129
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `timer_after`. Wire it in."
+  ]
+}

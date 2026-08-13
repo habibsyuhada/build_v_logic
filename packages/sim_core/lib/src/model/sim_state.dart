@@ -92,6 +92,7 @@ class VirusRuntime {
 class SimState {
   int tick = 0;
   int noiseMeter = 0;
+  int peakNoiseMeter = 0;
   final Map<String, NodeRuntime> nodes;
   final List<VirusRuntime> virusCopies = [];
   int tracePenalty = 0;
@@ -110,6 +111,7 @@ class SimState {
 
   void addNoise(int amount) {
     noiseMeter = (noiseMeter + amount).clamp(0, 100);
+    if (noiseMeter > peakNoiseMeter) peakNoiseMeter = noiseMeter;
   }
 
   void decayNoise(int amount) {

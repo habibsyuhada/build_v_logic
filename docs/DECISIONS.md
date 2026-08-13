@@ -65,6 +65,15 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   still required to be `> 0` for schema consistency, so defense blocks in
   `content/blocks.json` all carry `size_kb: 1` as a nominal placeholder
   that plays no role in defense validation.
+- **Block balance numbers (Phase 0 authoring pass).** §1.3 specifies cost
+  *ranges* (sensor 1-5KB, action 2-14KB, control flow 1-3KB, memory 3-6KB)
+  but not exact per-block numbers. `content/blocks.json` assigns concrete
+  values within those ranges based on relative power (e.g. `replicate` at
+  14KB/20 energy/6 noise is the most expensive action; `wait`/
+  `self_destruct` at 0 energy since they either do nothing or end the
+  virus). These are a first pass, meant to be tuned by `tools/bot_harness`
+  in Phase 1 per the §4.3 balance gate — not treated as final.
+
 ## Phase 1
 
 - **Interpreter branching model.** §3.2 gives the DAG node shape
@@ -132,6 +141,7 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   pass via bot harness," not a Phase 1 blocker — Phase 1's AC only
   requires the tool and the sim to exist and be correct, not for
   first-draft balance numbers to already be tuned.
+
 ## Phase 2
 
 - **State management: no Riverpod/Bloc, just `ChangeNotifier` +
@@ -177,6 +187,18 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   pilihan" (a *choice* of training networks) — Phase 2 ships exactly one,
   since the curated topology set is Phase 3 scope (§5). The Test Run flow
   is built to take any `NetworkDef`, so adding more later is additive.
+- **`BattleResult` gained `peakNoiseMeter` in Phase 3.** Mission "senyap"
+  (silent) star criteria (§1.5) need to compare against the noise level
+  reached during a run, but `BattleResult` only had score-derived
+  aggregates. Added `peakNoiseMeter` (tracked in `SimState.addNoise`,
+  highest value reached — not the final value, since noise decays over
+  time and a late-battle lull would otherwise hide an earlier spike that
+  should have failed the star). This changes `BattleResult`'s JSON shape,
+  so **all 10 golden hashes were regenerated and re-pinned** in this same
+  change (`tool/print_golden_hashes.dart` output verified stable across
+  repeated runs before updating `expectedGoldenHashes`) — this is the
+  "intentional balance/behavior update" path the golden test's own
+  failure message describes, not a determinism regression.
 - **`flutter analyze`/`flutter test` are what's actually verifiable
   here, not on-device performance.** "60fps di device mid-range" (§5
   Phase 2 AC) requires physical hardware profiling this sandbox doesn't
@@ -186,11 +208,51 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   `PresetRepository`) plus widget tests exercising the real screen (add a
   block, budget counter updates, Test Run produces a scrubbable result).
 
-- **Block balance numbers (Phase 0 authoring pass).** §1.3 specifies cost
-  *ranges* (sensor 1-5KB, action 2-14KB, control flow 1-3KB, memory 3-6KB)
-  but not exact per-block numbers. `content/blocks.json` assigns concrete
-  values within those ranges based on relative power (e.g. `replicate` at
-  14KB/20 energy/6 noise is the most expensive action; `wait`/
-  `self_destruct` at 0 energy since they either do nothing or end the
-  virus). These are a first pass, meant to be tuned by `tools/bot_harness`
-  in Phase 1 per the §4.3 balance gate — not treated as final.
+## Phase 3
+
+- **60 missions are generated, not hand-authored.** §3.5 explicitly allows
+  this ("boleh generate draft lalu curated"). `tools/mission_gen` is a
+  small deterministic generator: it assigns each of the 44 non-starter
+  blocks an `unlock_mission` (chapters 1-5, ~1 unlock per mission,
+  chapter 6 is a pure mastery gauntlet), and emits one procedurally-varied
+  network per mission (chapter-scaled node count/firewall level, a simple
+  quarantine-on-brute-force guard from chapter 3 onward). Re-running it is
+  idempotent. This is a first-pass draft per the plan's own framing —
+  hand-curation (real narrative writing, hand-designed topologies,
+  difficulty tuning) is future work, not a Phase 3 blocker.
+- **Starter kit includes `copy_data`.** The first generator draft starter
+  set (wait/move_random/if_else/sequence/firewall_detected) had no way to
+  actually exfiltrate data — chapter 1 would only ever earn the "selesai"
+  star via surviving, never via a real objective. `copy_data` was moved
+  into the starter kit so early missions have a genuine, completable
+  attack loop from mission 1. Caught by `real_content_smoke_test.dart`
+  asserting the starter kit contains it.
+- **Mission "senyap" (silent) star needs `BattleResult.peakNoiseMeter`**,
+  which didn't exist before Phase 3 — added to `sim_core`, all 10 golden
+  hashes re-pinned accordingly (see the sim_core-specific note above).
+- **Mission progression is strictly linear**, not a per-chapter unlock
+  tree: mission N is available once mission N-1 has ≥1 star (chapter
+  boundaries are cosmetic groupings in the UI, not separate gates). Simpler
+  than modeling chapter-level gates for a first playable pass; revisit if
+  playtesting (once real playtesters exist) shows players want to skip
+  around within a chapter.
+- **Flame renderer uses placeholder geometric shapes, not pixel-art
+  sprites.** §1.8 specifies 16x16 pixel-art virus sprites, 32x32 node
+  tiles, and per-action VFX (brute force = shake+spark, disguise = fade,
+  etc.). No art asset pipeline or artist exists in this environment — see
+  "Execution environment constraints" above. What's real and tested: a
+  working Flame `FlameGame` (`ReplayGame`) that lays out the actual
+  network graph (BFS-layered, left-to-right), reconstructs virus
+  positions tick-by-tick purely from the `BattleLog` event stream (same
+  approach a real PvP replay would use, no snapshot dependency), and
+  drives play/pause/speed/scrub/skip-to-result — verified via a widget
+  test that pumps the real `GameWidget`. Swapping circles for sprites and
+  adding per-action VFX is additive once art exists.
+- **No camera auto-follow / cinematic cuts to key events (§3.4).** The
+  Phase 3 renderer uses a static camera over the whole laid-out network.
+  Auto-follow-with-cuts is a real feature gap versus §3.4, not something
+  this pass claims to have — noted here rather than silently dropped.
+- **Playtest gate (§4.7: 10 non-gamer testers, <25% tutorial drop-off) is
+  not verifiable in this environment** — it requires real human
+  playtesters. See "Execution environment constraints" above;
+  `docs/ACCEPTANCE.md` marks it ⛔ rather than claiming a pass.

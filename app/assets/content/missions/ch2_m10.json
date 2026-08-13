@@ -1,0 +1,19 @@
+{
+  "id": "ch2_m10",
+  "chapter": 2,
+  "index_in_chapter": 10,
+  "title": "Ch2.10 — unlock: exploit",
+  "network_id": "net_mission_ch2_m10",
+  "unlocks_blocks": [
+    "exploit"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 120
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `exploit`. Wire it in.",
+    "Chapter 2, cleared. They'll notice soon."
+  ]
+}

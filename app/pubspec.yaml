@@ -99,6 +99,7 @@ flutter:
   assets:
     - assets/content/blocks.json
     - assets/content/balance.json
-    - assets/content/networks/training_01.json
+    - assets/content/networks/
+    - assets/content/missions/
 
 resolution: workspace

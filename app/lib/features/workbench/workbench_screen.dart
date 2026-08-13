@@ -1,5 +1,6 @@
 import 'package:content_schema/content_schema.dart';
 import 'package:flutter/material.dart';
+import 'package:sim_core/sim_core.dart';
 
 import '../core/content/content_repository.dart';
 import '../core/theme/payload_theme.dart';
@@ -13,11 +14,29 @@ import 'workbench_controller.dart';
 
 /// The workbench editor screen (§3.3, §2.2 `features/workbench`): block
 /// tray, node-graph canvas, budget/lint panel, node inspector, and a Test
-/// Run mode that resolves a battle locally against the training network.
+/// Run mode that resolves a battle locally.
+///
+/// Doubles as the campaign "attack" screen: pass [targetNetwork] (a
+/// mission's network instead of the generic training one), restrict the
+/// tray to [allowedBlocks] (a player's unlocked set), and observe results
+/// via [onBattleResolved] (the campaign screen uses this to award stars).
 class WorkbenchScreen extends StatefulWidget {
   final ContentRepository content;
+  final NetworkDef? targetNetwork;
+  final List<BlockDef>? allowedBlocks;
+  final void Function(BattleLog log)? onBattleResolved;
+  final String title;
+  final String runButtonTooltip;
 
-  const WorkbenchScreen({super.key, required this.content});
+  const WorkbenchScreen({
+    super.key,
+    required this.content,
+    this.targetNetwork,
+    this.allowedBlocks,
+    this.onBattleResolved,
+    this.title = 'workbench',
+    this.runButtonTooltip = 'Test Run',
+  });
 
   @override
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
@@ -28,6 +47,9 @@ class _WorkbenchScreenState extends State<WorkbenchScreen> {
   final TestRunController _testRun = TestRunController();
   bool _showTestRun = false;
   int _seed = 1;
+
+  List<BlockDef> get _availableBlocks => widget.allowedBlocks ?? widget.content.blocks;
+  NetworkDef get _network => widget.targetNetwork ?? widget.content.trainingNetwork;
 
   @override
   void initState() {
@@ -49,27 +71,29 @@ class _WorkbenchScreenState extends State<WorkbenchScreen> {
     final dag = _workbench.buildDagDef();
     if (dag == null) return;
     _testRun.run(
-      network: widget.content.trainingNetwork,
+      network: _network,
       virusDef: VirusDef(program: dag),
       balance: widget.content.balance,
       blockCatalog: widget.content.blocks,
       seed: _seed++,
     );
     setState(() => _showTestRun = true);
+    final log = _testRun.log;
+    if (log != null) widget.onBattleResolved?.call(log);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('workbench'),
+        title: Text(widget.title),
         actions: [
           ListenableBuilder(
             listenable: _workbench,
             builder: (context, _) => IconButton(
               key: const Key('run_test_button'),
               icon: const Icon(Icons.play_arrow),
-              tooltip: 'Test Run',
+              tooltip: widget.runButtonTooltip,
               onPressed: _workbench.nodes.isEmpty ? null : _runTest,
             ),
           ),
@@ -79,7 +103,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen> {
         children: [
           SizedBox(
             width: 220,
-            child: BlockTray(blocks: widget.content.blocks, onAdd: (b) => _workbench.addNode(b.id)),
+            child: BlockTray(blocks: _availableBlocks, onAdd: (b) => _workbench.addNode(b.id)),
           ),
           const VerticalDivider(width: 1),
           Expanded(

@@ -11,4 +11,5 @@ workspace:
   - tools/content_lint
   - tools/balance_sim
   - tools/bot_harness
+  - tools/mission_gen
   - app

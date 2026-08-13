@@ -77,3 +77,30 @@ All notable changes to the PAYLOAD project, organized by execution phase
   CI (`.github/workflows/ci.yml`) switched from `dart-lang/setup-dart` to
   `subosito/flutter-action`, since `app/`'s `flutter: sdk: flutter`
   dependency requires `flutter pub get` to resolve the workspace at all.
+
+## Phase 3 — Replay renderer + Campaign
+
+- `sim_core`: `BattleResult.peakNoiseMeter` added (drives the mission
+  "senyap" star); all 10 golden hashes regenerated and re-pinned.
+- `tools/mission_gen`: generates the full 60-mission campaign (6 chapters
+  x 10 missions) — one procedurally-varied training network per mission,
+  block unlock progression across chapters 1-5, chapter 6 as a mastery
+  gauntlet. `content/missions/*.json` + `content/networks/mission_*.json`
+  all validated by `tools/content_lint`.
+- Flame replay renderer (`app/lib/features/replay/flame/`): BFS-layered
+  network layout, virus positions reconstructed from the `BattleLog`
+  event stream (no snapshot dependency — matches how a real PvP replay
+  would work), play/pause/1x-2x-4x speed/scrub/skip-to-result controls.
+- Campaign system: `CampaignController` (linear mission availability,
+  3-star scoring — selesai/senyap/efisien per §1.5, block unlocks),
+  local persistence via `shared_preferences`, chapter/mission list UI,
+  and a mission attack screen that reuses the Phase 2 workbench
+  restricted to the player's currently-unlocked blocks.
+- Full offline loop is playable end-to-end: chapter list → mission →
+  briefing → build a virus from unlocked blocks → launch attack →
+  stars awarded → view Flame replay.
+- 53 tests in `app/` (up from 21), `flutter analyze` clean across the
+  whole workspace. New coverage: network layout, replay frame
+  reconstruction, playback controller, the real Flame `GameWidget`
+  rendering, campaign progression logic, and a full end-to-end campaign
+  widget test (chapter → mission → attack → stars → replay).

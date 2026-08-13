@@ -1,0 +1,18 @@
+{
+  "id": "ch1_m4",
+  "chapter": 1,
+  "index_in_chapter": 4,
+  "title": "Ch1.4 — unlock: antivirus_nearby",
+  "network_id": "net_mission_ch1_m4",
+  "unlocks_blocks": [
+    "antivirus_nearby"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 65,
+    "max_tick_for_star": 87
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `antivirus_nearby`. Wire it in."
+  ]
+}

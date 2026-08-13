@@ -1,0 +1,15 @@
+{
+  "id": "ch6_m6",
+  "chapter": 6,
+  "index_in_chapter": 6,
+  "title": "Ch6.6 — field run",
+  "network_id": "net_mission_ch6_m6",
+  "unlocks_blocks": [],
+  "star_criteria": {
+    "max_noise_for_star": 35,
+    "max_tick_for_star": 168
+  },
+  "dialog": [
+    "Another network, another crack in the wall."
+  ]
+}

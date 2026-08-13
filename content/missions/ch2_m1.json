@@ -1,0 +1,18 @@
+{
+  "id": "ch2_m1",
+  "chapter": 2,
+  "index_in_chapter": 1,
+  "title": "Ch2.1 — unlock: carrying_data",
+  "network_id": "net_mission_ch2_m1",
+  "unlocks_blocks": [
+    "carrying_data"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 59,
+    "max_tick_for_star": 93
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `carrying_data`. Wire it in."
+  ]
+}

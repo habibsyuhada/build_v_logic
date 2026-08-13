@@ -1,10 +1,14 @@
+import 'package:content_schema/content_schema.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sim_core/sim_core.dart';
 
 import '../../blueprints/blueprints_screen.dart';
 import '../../campaign/campaign_screen.dart';
+import '../../campaign/mission_screen.dart';
 import '../../network_builder/network_builder_screen.dart';
 import '../../profile/profile_screen.dart';
 import '../../pvp/pvp_screen.dart';
+import '../../replay/replay_screen.dart';
 import '../../settings/settings_screen.dart';
 import '../../shop/shop_screen.dart';
 import '../../workbench/workbench_screen.dart';
@@ -24,6 +28,21 @@ GoRouter buildAppRouter(ContentRepository content) {
       GoRoute(
         path: '/campaign',
         builder: (context, state) => const CampaignScreen(),
+      ),
+      GoRoute(
+        path: '/campaign/:missionId',
+        builder: (context, state) =>
+            MissionScreen(missionId: state.pathParameters['missionId']!),
+      ),
+      GoRoute(
+        path: '/replay',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, Object?>;
+          return ReplayScreen(
+            network: extra['network'] as NetworkDef,
+            log: extra['log'] as BattleLog,
+          );
+        },
       ),
       GoRoute(
         path: '/pvp',

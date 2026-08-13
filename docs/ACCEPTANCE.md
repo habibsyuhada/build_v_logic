@@ -35,7 +35,14 @@ Extra, beyond the letter of the AC: `tools/bot_harness` (§4.3) is implemented a
 
 ## Phase 3 — Replay renderer + Campaign
 
-_Pending._
+| AC | Status | Note |
+|---|---|---|
+| Kampanye playable end-to-end offline | ✅ | Full loop works with no network calls: chapter list → mission → briefing → build a virus from unlocked blocks → launch attack (`resolveBattle` locally) → stars awarded & persisted → Flame replay. Verified by `campaign_screen_test.dart`'s end-to-end widget test and `real_content_smoke_test.dart` against the real bundled 60-mission content. |
+| Playtest gate §4.7 dijalankan minimal pada misi 1–10 | ⛔ | Requires 10 real non-gamer human testers — not available in this sandboxed environment. See `docs/DECISIONS.md` "Execution environment constraints". Substituted: automated widget/logic test coverage of the same mission-1 flow (build → attack → result), which verifies the mechanism works, not that humans find it intuitive. |
+
+53/53 `app/` tests pass (up from 21), `flutter analyze` clean across the whole workspace. All 10 `sim_core` golden hashes re-verified after the `peakNoiseMeter` addition (see `docs/DECISIONS.md`).
+
+Known gaps vs. the letter of §3.4/§1.8 (tracked, not silently dropped — see `docs/DECISIONS.md` "Phase 3"): Flame renderer uses placeholder geometric shapes instead of pixel-art sprites (no art pipeline exists), and has no camera auto-follow/cinematic cuts (static camera over the whole network).
 
 ## Phase 4 — Backend & PvP async
 

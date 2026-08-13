@@ -1,0 +1,18 @@
+{
+  "id": "ch5_m3",
+  "chapter": 5,
+  "index_in_chapter": 3,
+  "title": "Ch5.3 — unlock: trace",
+  "network_id": "net_mission_ch5_m3",
+  "unlocks_blocks": [
+    "trace"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 41,
+    "max_tick_for_star": 144
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `trace`. Wire it in."
+  ]
+}

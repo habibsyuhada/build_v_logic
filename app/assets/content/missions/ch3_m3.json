@@ -1,0 +1,18 @@
+{
+  "id": "ch3_m3",
+  "chapter": 3,
+  "index_in_chapter": 3,
+  "title": "Ch3.3 — unlock: plant_backdoor",
+  "network_id": "net_mission_ch3_m3",
+  "unlocks_blocks": [
+    "plant_backdoor"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 53,
+    "max_tick_for_star": 114
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `plant_backdoor`. Wire it in."
+  ]
+}

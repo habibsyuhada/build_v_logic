@@ -1,0 +1,18 @@
+{
+  "id": "ch1_m3",
+  "chapter": 1,
+  "index_in_chapter": 3,
+  "title": "Ch1.3 — unlock: antivirus_here",
+  "network_id": "net_mission_ch1_m3",
+  "unlocks_blocks": [
+    "antivirus_here"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 65,
+    "max_tick_for_star": 84
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `antivirus_here`. Wire it in."
+  ]
+}

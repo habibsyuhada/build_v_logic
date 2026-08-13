@@ -1,0 +1,11 @@
+name: mission_gen
+description: Generates the 60-mission campaign content tree (§1.5, §3.5) — missions, training networks, and blocks.json unlock_mission assignments.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  content_schema: ^0.1.0
+resolution: workspace

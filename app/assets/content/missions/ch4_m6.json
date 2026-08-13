@@ -1,0 +1,18 @@
+{
+  "id": "ch4_m6",
+  "chapter": 4,
+  "index_in_chapter": 6,
+  "title": "Ch4.6 — unlock: intruder_bruteforcing",
+  "network_id": "net_mission_ch4_m6",
+  "unlocks_blocks": [
+    "intruder_bruteforcing"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 47,
+    "max_tick_for_star": 138
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `intruder_bruteforcing`. Wire it in."
+  ]
+}

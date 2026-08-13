@@ -1,0 +1,18 @@
+{
+  "id": "ch1_m2",
+  "chapter": 1,
+  "index_in_chapter": 2,
+  "title": "Ch1.2 — unlock: firewall_has_exploit",
+  "network_id": "net_mission_ch1_m2",
+  "unlocks_blocks": [
+    "firewall_has_exploit"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 65,
+    "max_tick_for_star": 81
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `firewall_has_exploit`. Wire it in."
+  ]
+}

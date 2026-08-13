@@ -2,7 +2,10 @@ import 'package:content_schema/content_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:payload_app/app.dart';
+import 'package:payload_app/features/campaign/campaign_controller.dart';
 import 'package:payload_app/features/core/content/content_repository.dart';
+import 'package:payload_app/features/core/storage/campaign_storage.dart';
+import 'package:payload_app/features/core/storage/preset_storage.dart';
 
 ContentRepository _fixtureContent() {
   final blocks = [
@@ -28,9 +31,19 @@ ContentRepository _fixtureContent() {
   );
 }
 
+CampaignController _fixtureCampaign(ContentRepository content) =>
+    CampaignController(content: content, storage: InMemoryCampaignStorage());
+
+PresetRepository _fixturePresets() => PresetRepository(InMemoryPresetStorage());
+
 void main() {
   testWidgets('app boots to the workbench screen', (WidgetTester tester) async {
-    await tester.pumpWidget(PayloadApp(content: _fixtureContent()));
+    final content = _fixtureContent();
+    await tester.pumpWidget(PayloadApp(
+      content: content,
+      campaign: _fixtureCampaign(content),
+      presets: _fixturePresets(),
+    ));
     await tester.pumpAndSettle();
 
     expect(find.text('workbench'), findsOneWidget);
@@ -38,7 +51,12 @@ void main() {
   });
 
   testWidgets('tapping a block in the tray adds it to the canvas', (WidgetTester tester) async {
-    await tester.pumpWidget(PayloadApp(content: _fixtureContent()));
+    final content = _fixtureContent();
+    await tester.pumpWidget(PayloadApp(
+      content: content,
+      campaign: _fixtureCampaign(content),
+      presets: _fixturePresets(),
+    ));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('node_n0')), findsNothing);
@@ -52,7 +70,12 @@ void main() {
 
   testWidgets('Test Run button is disabled with an empty canvas and enabled after adding a block',
       (WidgetTester tester) async {
-    await tester.pumpWidget(PayloadApp(content: _fixtureContent()));
+    final content = _fixtureContent();
+    await tester.pumpWidget(PayloadApp(
+      content: content,
+      campaign: _fixtureCampaign(content),
+      presets: _fixturePresets(),
+    ));
     await tester.pumpAndSettle();
 
     final runButtonFinder = find.byKey(const Key('run_test_button'));

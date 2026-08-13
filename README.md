@@ -15,7 +15,7 @@ packages/shared_models/  client<->server DTOs (populated in Phase 4)
 app/                      Flutter + Flame client
 server/                   Serverpod backend (Phase 4)
 content/                  blocks.json, missions/, networks/, balance.json
-tools/                    content_lint, balance_sim, bot_harness
+tools/                    content_lint, balance_sim, bot_harness, mission_gen
 ```
 
 ## Getting started
@@ -32,7 +32,9 @@ dart run tools/content_lint/bin/content_lint.dart content   # validate content/
 (cd packages/sim_core && dart test)                     # sim_core unit + golden tests
 dart run packages/sim_core/tool/print_golden_hashes.dart    # golden hashes (run from repo root)
 dart run tools/bot_harness/bin/bot_harness.dart [--seeds=1000]   # balance regression report
-(cd app && flutter test)                                # workbench/Test Run widget + logic tests
+dart run tools/mission_gen/bin/generate_missions.dart content    # (re)generate the 60-mission campaign
+cp content/blocks.json app/assets/content/ && cp content/missions/*.json app/assets/content/missions/ && cp content/networks/*.json app/assets/content/networks/   # sync into the app bundle (manual for now, see docs/DECISIONS.md)
+(cd app && flutter test)                                # full app test suite (editor, campaign, replay)
 (cd app && flutter run)                                 # launch the client (needs a device/emulator)
 docker compose up -d postgres redis                     # local dev infra
 ```

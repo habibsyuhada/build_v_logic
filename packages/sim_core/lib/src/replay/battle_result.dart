@@ -10,6 +10,12 @@ class BattleResult {
   final int tracePenalty;
   final int score;
 
+  /// Highest `noiseMeter` value reached at any point during the battle
+  /// (noise decays over time, so the final value alone would understate
+  /// how "loud" a run actually was). Drives the mission "senyap" (silent)
+  /// star: §1.5 "3-star: selesai / senyap (noise < X) / efisien (tick < Y)".
+  final int peakNoiseMeter;
+
   const BattleResult({
     required this.ticksUsed,
     required this.dataExfiltrated,
@@ -19,6 +25,7 @@ class BattleResult {
     required this.deadCopies,
     required this.tracePenalty,
     required this.score,
+    required this.peakNoiseMeter,
   });
 
   factory BattleResult.fromJson(Map<String, dynamic> json) => BattleResult(
@@ -30,6 +37,7 @@ class BattleResult {
         deadCopies: json['dead_copies'] as int,
         tracePenalty: json['trace_penalty'] as int,
         score: json['score'] as int,
+        peakNoiseMeter: json['peak_noise_meter'] as int,
       );
 
   Map<String, dynamic> toJson() => {
@@ -41,5 +49,6 @@ class BattleResult {
         'dead_copies': deadCopies,
         'trace_penalty': tracePenalty,
         'score': score,
+        'peak_noise_meter': peakNoiseMeter,
       };
 }

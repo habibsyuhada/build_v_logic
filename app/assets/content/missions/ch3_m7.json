@@ -1,0 +1,18 @@
+{
+  "id": "ch3_m7",
+  "chapter": 3,
+  "index_in_chapter": 7,
+  "title": "Ch3.7 — unlock: repeat",
+  "network_id": "net_mission_ch3_m7",
+  "unlocks_blocks": [
+    "repeat"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 53,
+    "max_tick_for_star": 126
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `repeat`. Wire it in."
+  ]
+}

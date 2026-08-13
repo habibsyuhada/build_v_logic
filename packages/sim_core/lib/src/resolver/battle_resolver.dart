@@ -154,6 +154,7 @@ BattleLog resolveBattle({
     deadCopies: deadCopies,
     tracePenalty: state.tracePenalty,
     score: rawScore < 0 ? 0 : rawScore,
+    peakNoiseMeter: state.peakNoiseMeter,
   );
 
   return BattleLog(

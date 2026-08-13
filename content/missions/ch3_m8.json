@@ -1,0 +1,18 @@
+{
+  "id": "ch3_m8",
+  "chapter": 3,
+  "index_in_chapter": 8,
+  "title": "Ch3.8 — unlock: random_branch",
+  "network_id": "net_mission_ch3_m8",
+  "unlocks_blocks": [
+    "random_branch"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 53,
+    "max_tick_for_star": 129
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `random_branch`. Wire it in."
+  ]
+}

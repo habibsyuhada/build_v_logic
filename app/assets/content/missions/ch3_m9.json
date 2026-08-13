@@ -1,0 +1,18 @@
+{
+  "id": "ch3_m9",
+  "chapter": 3,
+  "index_in_chapter": 9,
+  "title": "Ch3.9 — unlock: mark_node",
+  "network_id": "net_mission_ch3_m9",
+  "unlocks_blocks": [
+    "mark_node"
+  ],
+  "star_criteria": {
+    "max_noise_for_star": 53,
+    "max_tick_for_star": 132
+  },
+  "dialog": [
+    "Another network, another crack in the wall.",
+    "New tool acquired: `mark_node`. Wire it in."
+  ]
+}
