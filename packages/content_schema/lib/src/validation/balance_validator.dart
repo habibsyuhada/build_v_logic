@@ -35,6 +35,18 @@ ValidationResult validateBalanceConfig(BalanceConfig config) {
   if (config.attackEnergyRegenMinutes <= 0) {
     errors.add('attack_energy_regen_minutes must be > 0');
   }
+  if (config.trafficHighThreshold < 0) {
+    errors.add('traffic_high_threshold must be >= 0');
+  }
+  if (config.maxVirusCopies <= 0) {
+    errors.add('max_virus_copies must be > 0');
+  }
+  if (config.noiseDecayPerTick < 0) {
+    errors.add('noise_decay_per_tick must be >= 0');
+  }
+  if (config.scoreTickEfficiencyDivisor <= 0) {
+    errors.add('score_tick_efficiency_divisor must be > 0');
+  }
 
   return ValidationResult(errors: errors);
 }

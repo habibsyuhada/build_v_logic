@@ -27,5 +27,7 @@ dart pub get                                          # resolves the whole works
 dart analyze                                           # lint the whole workspace
 dart run tools/content_lint/bin/content_lint.dart content   # validate content/
 (cd packages/sim_core && dart test)                     # sim_core unit + golden tests
+dart run packages/sim_core/tool/print_golden_hashes.dart    # golden hashes (run from repo root)
+dart run tools/bot_harness/bin/bot_harness.dart [--seeds=1000]   # balance regression report
 docker compose up -d postgres redis                     # local dev infra
 ```

@@ -65,6 +65,73 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   still required to be `> 0` for schema consistency, so defense blocks in
   `content/blocks.json` all carry `size_kb: 1` as a nominal placeholder
   that plays no role in defense validation.
+## Phase 1
+
+- **Interpreter branching model.** §3.2 gives the DAG node shape
+  (`{id, block_id, params, out}`) but not a formal execution grammar, and
+  §1.3 lists `if_else`/`priority`/`repeat`/`random_branch`/`sequence` as a
+  family separate from sensors — implying sensors don't branch on their
+  own, contrary to the naive reading of "Sensor (kondisi, hasil ya/tidak)."
+  Resolution: sensor-family (and sensor-like memory: `node_marked`,
+  `counter_gt`, `timer_after`) blocks evaluate a predicate, store it as the
+  walk's `lastSensorResult` register, and always continue to `out['next']`
+  — sensors never branch themselves. Only control-flow blocks branch:
+  `if_else` reads the register; `random_branch` flips the shared seeded
+  RNG; `priority` tries numbered candidates (`out['1']`, `out['2']`, ...)
+  as bounded sub-chains in order, taking the first whose sub-chain executes
+  an action; `repeat(x)` runs `out['body']` as a sub-chain `x` times then
+  continues at `out['after']`. All sub-chains share the parent's 64-step
+  eval budget for that tick. This is the simplest grammar consistent with
+  every block staying a plain flowchart node, and it makes `if_else`
+  meaningfully different from a bare sensor's own branching (which doesn't
+  exist in this model). See `packages/sim_core/lib/src/interpreter/chain_walker.dart`.
+- **Tick order & disguise timing.** §3.1 fixes the per-tick order as
+  defense sensors → defense actions → virus copies → world update. Taken
+  literally, this means a defense sensor at tick T sees the virus's state
+  as of *before* the virus acts that tick — so a virus that disguises
+  every tick is only actually hidden starting the tick *after* its first
+  disguise (see the two `resolveBattle: defense logic` tests in
+  `battle_resolver_test.dart`). This is intentional: it makes "arrive
+  already disguised" a real skill (disguise before you're in detection
+  range), not a free always-on cloak.
+- **Defense blocks reuse `energy_cost`/`noise` as effect magnitude, not
+  cost.** Defenders have no energy pool (only virus copies do), so
+  `quarantine`'s `energy_cost` is the damage it deals to an intruder,
+  `raise_alarm`'s `noise` is the global noise bump it applies, and
+  `trace`'s `energy_cost` is the score penalty it inflicts — all still
+  sourced from `content/blocks.json`, never hardcoded, just reinterpreted
+  per-action rather than auto-applied like a virus action's cost.
+- **Scoring formula (§1.2 "f(data value, log dihapus, exit bersih vs
+  mati, tick efisiensi)").** The plan names the four inputs but not the
+  formula. First pass: `score = dataExfiltrated + logsDeleted *
+  scoreLogDeletedBonus + cleanExits * scoreCleanExitBonus - deadCopies *
+  scoreDeadPenalty - tracePenalty - ticksUsed / scoreTickEfficiencyDivisor`,
+  clamped at 0. All four bonus/penalty weights live in
+  `content/balance.json`, not code, so `tools/bot_harness` can be used to
+  retune them later without touching `sim_core`.
+- **`tools/bot_harness` topology generator is a first pass, not the 12
+  curated topologies from Phase 3.** It currently generates 12
+  parametrized single-path chain networks (varying length, firewall
+  level, guard presence, data value). Because each node in a chain has
+  exactly one outgoing edge, `move_random`'s "randomness" is not actually
+  random on these topologies (only one legal move exists), so seed
+  variation only matters for archetypes/programs that call
+  `random_chance`/`random_branch` directly. This is fine for smoke-testing
+  the harness end-to-end and for surfacing an obviously broken archetype
+  (see below), but a real branching topology set is needed before its
+  win-rate numbers are meaningful balance data — that arrives with Phase
+  3's curated topologies.
+- **First bot_harness run surfaces `Hydra` as badly out of balance by
+  design, not by bug.** With today's numbers, `replicate` costs 20 energy
+  and halves the copy's remaining energy on top of that, so an
+  opening burst of replication (as Hydra's DAG does deliberately) leaves
+  every copy with too little energy left to ever reach a data node — 0%
+  global win-rate. `Ghost`/`Bulldozer` also sit outside the 40-60% band on
+  this first pass (both ~67%). Per §4.3 this is exactly what the harness
+  is for; per the Phase roadmap, closing this gap is Phase 6's "balance
+  pass via bot harness," not a Phase 1 blocker — Phase 1's AC only
+  requires the tool and the sim to exist and be correct, not for
+  first-draft balance numbers to already be tuned.
 - **Block balance numbers (Phase 0 authoring pass).** §1.3 specifies cost
   *ranges* (sensor 1-5KB, action 2-14KB, control flow 1-3KB, memory 3-6KB)
   but not exact per-block numbers. `content/blocks.json` assigns concrete

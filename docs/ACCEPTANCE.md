@@ -15,7 +15,13 @@ constraints".
 
 ## Phase 1 — sim_core
 
-_Pending — filled in as Phase 1 completes._
+| AC | Status | Note |
+|---|---|---|
+| Seluruh unit test lulus | ✅ | 57/57 tests pass: `content_schema` (15), `sim_core` (38, incl. 10 golden), `bot_harness` (4). `dart analyze --fatal-infos` clean. |
+| Golden hash identik lintas platform CI | ⚠️ | 10 scenarios pinned to SHA-256 hashes in `test/golden_test.dart`, stable across repeated local runs; `.github/workflows/ci.yml` diffs `tool/print_golden_hashes.dart` output between ubuntu-latest and macos-latest on every CI run. This sandbox only has Linux x64, so the macOS leg of that diff has not actually been observed running — the mechanism is in place and self-verifying once CI executes it. |
+| 600-tick cap & 64-eval cap terbukti dengan test | ✅ | `battle_resolver_test.dart`: a `wait`-only virus runs to exactly tick 600; an unbreakable sensor/if_else loop stalls every tick (`virus_stalled` event, 0 actions) yet the battle still terminates at tick 600. `chain_walker_test.dart` unit-tests the 64-step cap directly. |
+
+Extra, beyond the letter of the AC: `tools/bot_harness` (§4.3) is implemented and runnable (3 archetypes x 12 topologies x 1000 seeds in ~2.5s). Its first real-content run flags all three archetypes outside the 40-60% win-rate band — this is expected/correct behavior for untuned Phase-0 balance numbers, not a Phase 1 defect; see `docs/DECISIONS.md`.
 
 ## Phase 2 — Workbench + Test Run
 

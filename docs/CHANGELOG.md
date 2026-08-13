@@ -22,3 +22,27 @@ All notable changes to the PAYLOAD project, organized by execution phase
 - `.github/workflows/ci.yml`: analyze + content_lint + test matrix
   (ubuntu-latest, macos-latest) with a cross-platform golden-hash diff job
   wired up ahead of Phase 1's golden determinism tests.
+
+## Phase 1 — sim_core
+
+- `sim_core`: xoshiro128** PRNG (integer-only, seeded, reproducible), world
+  model (`SimState`/`NodeRuntime`/`VirusRuntime`), a shared DAG interpreter
+  (`ChainWalker`) implementing all 49 blocks from §1.3 (16 sensors, 13
+  actions, 5 control-flow, 5 memory, 4 defense sensors, 6 defense actions),
+  the tick-ordered battle resolver (`resolveBattle`), and a versioned
+  replay codec (`BattleLog`/`BattleEvent`/`BattleResult`).
+- 600-tick hard cap and 64-eval-step-per-tick stall cap both implemented
+  and covered by dedicated tests (an infinite sensor loop stalls every
+  tick with zero actions; a `wait`-only virus runs exactly to tick 600).
+- 10 golden determinism scenarios (`lib/src/golden/golden_scenarios.dart`,
+  `test/golden_test.dart`) pinned to SHA-256 hashes of their full
+  `BattleLog` JSON; `tool/print_golden_hashes.dart` is what CI diffs
+  between ubuntu-latest and macos-latest.
+- `tools/bot_harness`: 3 archetypes (Ghost/Bulldozer/Hydra) x 12 topologies
+  x configurable seed count (default 1000) win-rate/avg-score report per
+  §4.3. First run flags all three archetypes outside the 40-60% band —
+  expected for untuned Phase-0 balance numbers; tracked as a Phase 6
+  balance-pass item, see `docs/DECISIONS.md`.
+- 57 tests total across `content_schema` (15), `sim_core` (38, including
+  the 10 golden scenarios), and `bot_harness` (4); `dart analyze
+  --fatal-infos` clean across the whole workspace.
