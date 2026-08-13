@@ -46,7 +46,15 @@ Known gaps vs. the letter of §3.4/§1.8 (tracked, not silently dropped — see 
 
 ## Phase 4 — Backend & PvP async
 
-_Pending._
+| AC | Status | Note |
+|---|---|---|
+| e2e attack→replay di staging | ⛔ | Requires a live server + Postgres + Redis. No Docker daemon is available in this sandboxed environment (`dockerd` refuses to start — no systemd, restricted ulimits) — see `docs/DECISIONS.md`. Substituted verification: `serverpod generate` succeeds against every model/endpoint (proves schema + endpoint code is valid per Serverpod's own toolchain), `dart analyze` clean on `server/` and `packages/shared_models`, and `BattleWorker.process` (the actual attack→battle-log resolution `BattleEndpoint.submitAttack` calls) is exercised by real, passing `sim_core` battles in unit tests. |
+| Load test §4.6 (500 battle/min) | ⛔ | Requires a running server to load-test — same blocker as above. |
+| Server menolak virus ilegal (blok belum unlock / over budget) dengan test | ✅ | `VirusSubmissionValidator` (reused by `BattleEndpoint.submitAttack`) rejects locked blocks and over-capacity virus defs; covered by 5 tests in `virus_submission_validator_test.dart`. The server never trusts the client's reported unlock set — it always re-derives it from the `Unlock` table. |
+
+39/39 server business-logic tests pass (`server/test/business`, no live database needed), `dart analyze` clean across `server/` + `packages/shared_models`. Extra, beyond the letter of the AC: `DefenseEndpoint.save` similarly rejects invalid defenses (bad topology, >6-block defense-logic per node, locked blocks) — 5 tests in `defense_submission_validator_test.dart`.
+
+Known simplifications vs. the letter of §2.3/§2.4 (tracked, not silently dropped — see `docs/DECISIONS.md` "Phase 4"): battle resolution runs synchronously in-request rather than through a Redis-backed queue + separate worker process (no live Redis to verify a hand-rolled queue protocol against); battle logs are always stored inline rather than routing >32KB logs to S3-compatible object storage (no live storage credentials); only guest auth is wired end-to-end (Google/Apple need live OAuth credentials).
 
 ## Phase 5 — Meta & ekonomi
 

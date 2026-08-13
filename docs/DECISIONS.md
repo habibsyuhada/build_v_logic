@@ -65,6 +65,90 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   still required to be `> 0` for schema consistency, so defense blocks in
   `content/blocks.json` all carry `size_kb: 1` as a nominal placeholder
   that plays no role in defense validation.
+## Phase 4
+
+- **Real Serverpod 3.4.11 project, not a hand-rolled server.** `serverpod
+  create` scaffolded `server/` and `packages/shared_models` (renamed from
+  the generated `payload_client`/`payload_server`); the generated auth
+  scaffolding (JWT sessions, email identity provider) was kept as-is since
+  it's official, correct, tooling-generated code, not something to
+  second-guess without the ability to test it live.
+- **`server/endpoints/` and `server/jobs/` (Phase 0's illustrative
+  top-level dirs) were dropped** in favor of Serverpod's real convention:
+  endpoints live under `server/lib/src/endpoints/`, models under
+  `server/lib/src/models/*.spy.yaml`, business logic under
+  `server/lib/src/business/`. §2.2's tree was a simplified illustration,
+  not literal tooling — the simplest interpretation consistent with §7 is
+  to follow the actual framework's convention over the plan's shorthand.
+- **Only guest auth is wired up end-to-end; Google/Apple are not.**
+  `PlayerEndpoint.createGuest` creates a `serverpod_auth` `AuthUser` with
+  no login method attached (via `AuthUsers().create`) plus a `Player`
+  row, then issues a real JWT session token. Google/Apple sign-in need
+  live OAuth client credentials this environment doesn't have and can't
+  safely fabricate — see "Execution environment constraints". "Upgrading"
+  a guest later is architecturally just linking an email/Google/Apple
+  credential to the *same* `AuthUser` (a `serverpod_auth`-provided
+  operation) — `Player` rows key off `authUserId`, not the login method,
+  so no data model change is needed when that's wired up.
+- **Almost all endpoint logic lives in `server/lib/src/business/` as pure,
+  `Session`-free functions/classes** (`RatingCalculator`,
+  `BattleOutcomeClassifier`, `Matchmaker`, `VirusSubmissionValidator`,
+  `DefenseSubmissionValidator`, `BattleWorker`, `SimVersionGate`,
+  `LogStorageDecision`), each with real unit tests (39 total). The
+  `Endpoint` classes (`PlayerEndpoint`, `DefenseEndpoint`,
+  `BattleEndpoint`) are kept intentionally thin — auth/lookup/persist
+  glue around those pure functions — both because that's good design
+  and because it's the only way to get real test coverage without a
+  live database in this environment (see below).
+- **`BattleEndpoint.submitAttack` resolves synchronously in-request,
+  not through a Redis-backed queue + separate worker process.** §2.3
+  describes "enqueue ke battle queue (Redis) → worker: ...". This
+  environment has no live Redis to verify a hand-written queue
+  producer/consumer protocol against (no Docker daemon — see "Execution
+  environment constraints"), and shipping unverified wire-protocol code
+  would be worse than being explicit about the simplification.
+  `BattleWorker.process(...)` — the actual resolution logic — is exactly
+  the function a real queue consumer would call per job; wiring a
+  Redis-backed queue on top is a deployment/infra change, not a rewrite
+  of the resolution logic itself.
+- **Object storage for >32KB battle logs (§2.4 `log_ref`) is a documented
+  seam, not implemented.** `LogStorageDecision` correctly *decides*
+  inline-vs-external based on size (tested), but the actual S3-compatible
+  upload needs live credentials this environment doesn't have.
+  `BattleEndpoint.submitAttack` currently always stores the log inline
+  (`logJson`); `logRef` stays unused until that upload call is added.
+- **Rating: Elo-like with an adjustable K-factor** (§1.5: "Elo-like, K
+  disesuaikan") — K=40 for players under 10 games played, K=20 after,
+  the standard "provisional period" pattern. `RatingCalculator` is pure
+  and fully tested (7 tests) rather than tuned against real match data,
+  which doesn't exist yet.
+- **`BattleOutcomeClassifier`'s win/loss/draw rule is a first pass**:
+  attackerWin if `dataExfiltrated > 0`; defenderWin if the attacker's
+  virus was fully wiped out (`survivingCopies == 0`) with nothing gained;
+  draw otherwise (survived, exfiltrated nothing). Simple, testable, and
+  consistent with §1.2's scoring inputs — not claimed as final balance.
+- **Matchmaking (`Matchmaker.selectDefender`) is a pure function over a
+  candidate list**, not a live database query — real matchmaking would
+  build that candidate list from a live-players-first, ghost-fallback
+  query and hand it to this same function. Modeled this way specifically
+  so the "never empty, ghost network from day one" guarantee (§1.5.3) is
+  directly unit-testable without a live database.
+- **Server bundles its own `content/blocks.json` +`content/balance.json`
+  copy** (`server/content/`), same pattern as `app/assets/content/` —
+  same manual-sync caveat noted in the Phase 2 entry above applies here
+  too.
+- **The server has never actually been booted in this environment.**
+  There is no Docker daemon available (confirmed: `dockerd` refuses to
+  start — no systemd, restricted ulimits), so `docker compose up`,
+  `dart bin/main.dart --apply-migrations`, and any live-database
+  integration test are unverified here. What *is* verified: `serverpod
+  generate` succeeds against the real model/endpoint files (proving the
+  `.spy.yaml` schema and endpoint code are syntactically and
+  type-correct per Serverpod's own toolchain), `dart analyze` is clean
+  across `server/` and `packages/shared_models`, and all business logic
+  has real passing unit tests. See `docs/ACCEPTANCE.md` for exactly
+  which Phase 4 AC items this does and doesn't satisfy.
+
 - **Block balance numbers (Phase 0 authoring pass).** §1.3 specifies cost
   *ranges* (sensor 1-5KB, action 2-14KB, control flow 1-3KB, memory 3-6KB)
   but not exact per-block numbers. `content/blocks.json` assigns concrete

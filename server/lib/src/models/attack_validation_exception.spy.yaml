@@ -1,0 +1,6 @@
+### Thrown when a submitted virus fails validation (§2.5) — malformed
+### JSON, over budget, or a locked block. The server never trusts the
+### client's own unlock bookkeeping (§2.5).
+exception: AttackValidationException
+fields:
+  errors: List<String>

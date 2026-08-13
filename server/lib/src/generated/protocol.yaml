@@ -1,0 +1,20 @@
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+battle:
+  - submitAttack:
+  - getBattle:
+defense:
+  - save:
+player:
+  - createGuest:
+  - me:
+  - updateSettings:

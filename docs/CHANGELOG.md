@@ -104,3 +104,43 @@ All notable changes to the PAYLOAD project, organized by execution phase
   reconstruction, playback controller, the real Flame `GameWidget`
   rendering, campaign progression logic, and a full end-to-end campaign
   widget test (chapter → mission → attack → stars → replay).
+
+## Phase 4 — Backend & PvP async
+
+- Real Serverpod 3.4.11 project (`server/` + `packages/shared_models` as
+  the generated client), scaffolded via `serverpod create` and folded
+  into the monorepo workspace.
+- Data models (`server/lib/src/models/*.spy.yaml`): `Player`, `Unlock`,
+  `VirusPreset`, `Defense`, `Battle` (+ `BattleOutcome` enum), wired to
+  `serverpod_auth`'s `AuthUser` — `serverpod generate` runs clean.
+- Guest auth end-to-end (`PlayerEndpoint.createGuest`): creates an
+  `AuthUser` + `Player` and issues a real signed session token.
+  Google/Apple sign-in are architecturally ready to add (same `AuthUser`
+  the guest flow already uses) but need live OAuth credentials this
+  environment doesn't have — see `docs/DECISIONS.md`.
+- `DefenseEndpoint.save`: validates a submitted defense (topology +
+  per-node defense-logic, 6-block cap per §1.4) via
+  `content_schema.validateNetwork`/`validateDag`, versions and activates
+  it, deactivating the previous version.
+- `BattleEndpoint.submitAttack`/`getBattle`: validates a submitted virus
+  (never trusts the client's own unlock bookkeeping), checks the sim
+  version gate (§2.7), resolves the battle via `sim_core.resolveBattle`,
+  classifies the outcome, computes an Elo-like rating delta (§1.5,
+  K-factor adjusted by games played), and persists the result.
+- All endpoint business logic extracted into pure, `Session`-free classes
+  in `server/lib/src/business/` (`RatingCalculator`,
+  `BattleOutcomeClassifier`, `Matchmaker`, `VirusSubmissionValidator`,
+  `DefenseSubmissionValidator`, `BattleWorker`, `SimVersionGate`,
+  `LogStorageDecision`) — 39 passing unit tests, none requiring a live
+  database.
+- `server/Dockerfile` updated to build from the monorepo root (the
+  scaffolded version only knew about `server/`, but `server/` depends on
+  the local `content_schema`/`sim_core`/`shared_models` workspace
+  packages, not published ones).
+- Root `docker-compose.yml` replaced by Serverpod's own generated
+  `server/docker-compose.yaml` (Postgres + Redis, dev + test instances) —
+  the canonical one going forward.
+- `dart analyze` clean across `server/` and `packages/shared_models`.
+  **Not verified**: the server booting against a live database — no
+  Docker daemon is available in this environment. See
+  `docs/ACCEPTANCE.md` and `docs/DECISIONS.md`.

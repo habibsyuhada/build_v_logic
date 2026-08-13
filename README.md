@@ -11,23 +11,25 @@ spec: [`PAYLOAD_PLAN.md`](./PAYLOAD_PLAN.md). Execution status per phase:
 ```
 packages/sim_core/       deterministic battle simulation core (pure Dart)
 packages/content_schema/ models + validators for content/ JSON
-packages/shared_models/  client<->server DTOs (populated in Phase 4)
+packages/shared_models/  Serverpod-generated client protocol (regen via `serverpod generate` in server/)
 app/                      Flutter + Flame client
-server/                   Serverpod backend (Phase 4)
+server/                   Serverpod backend (auth, defense, battle endpoints)
 content/                  blocks.json, missions/, networks/, balance.json
 tools/                    content_lint, balance_sim, bot_harness, mission_gen
 ```
 
 ## Getting started
 
-Requires the Flutter SDK (stable channel; bundles a matching Dart SDK).
-Since `app/` joined the workspace in Phase 2 (`flutter: sdk: flutter`),
-use `flutter pub get`/`flutter analyze` for the whole workspace — plain
-`dart pub get` can no longer resolve it.
+Requires the Flutter SDK (stable channel; bundles a matching Dart SDK) and
+`serverpod_cli` (`dart pub global activate serverpod_cli`) if you're
+touching `server/` models or endpoints. Since `app/` and `server/` both
+joined the workspace (`flutter: sdk: flutter` / Serverpod's own
+dependencies), use `flutter pub get`/`flutter analyze` for the whole
+workspace — plain `dart pub get` can no longer resolve it.
 
 ```bash
 flutter pub get                                       # resolves the whole workspace
-flutter analyze                                        # lint the whole workspace (app/ + pure-Dart packages)
+flutter analyze                                        # lint the whole workspace
 dart run tools/content_lint/bin/content_lint.dart content   # validate content/
 (cd packages/sim_core && dart test)                     # sim_core unit + golden tests
 dart run packages/sim_core/tool/print_golden_hashes.dart    # golden hashes (run from repo root)
@@ -36,5 +38,16 @@ dart run tools/mission_gen/bin/generate_missions.dart content    # (re)generate 
 cp content/blocks.json app/assets/content/ && cp content/missions/*.json app/assets/content/missions/ && cp content/networks/*.json app/assets/content/networks/   # sync into the app bundle (manual for now, see docs/DECISIONS.md)
 (cd app && flutter test)                                # full app test suite (editor, campaign, replay)
 (cd app && flutter run)                                 # launch the client (needs a device/emulator)
-docker compose up -d postgres redis                     # local dev infra
+(cd server && dart test test/business)                  # server business-logic tests (no live DB needed)
+(cd server && serverpod generate)                       # regenerate protocol/db code after editing lib/src/models/*.spy.yaml
+docker compose -f server/docker-compose.yaml up -d      # local Postgres + Redis for the server
+(cd server && dart bin/main.dart --apply-migrations)     # run the server against the local DB (needs the compose services up)
 ```
+
+**Not verifiable in this sandbox** (see `docs/DECISIONS.md`): the server
+has never actually been booted here — there's no Docker daemon available
+in this environment, so `docker compose` and any live-database
+integration test can't run. Everything under `server/lib/src/business/`
+is pure logic with no database dependency and *is* fully tested; the thin
+`Endpoint` wrappers around it are correct by code review and
+`dart analyze`, not by an observed successful boot.

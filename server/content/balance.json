@@ -1,0 +1,19 @@
+{
+  "starting_capacity_kb": 40,
+  "max_capacity_kb": 90,
+  "stealth_safe_max_kb": 25,
+  "stealth_auto_flag_min_kb": 60,
+  "starting_energy": 100,
+  "noise_alert_threshold": 70,
+  "max_ticks_per_battle": 600,
+  "max_eval_steps_per_tick": 64,
+  "attack_energy_max": 5,
+  "attack_energy_regen_minutes": 30,
+  "traffic_high_threshold": 7,
+  "max_virus_copies": 8,
+  "noise_decay_per_tick": 1,
+  "score_log_deleted_bonus": 5,
+  "score_clean_exit_bonus": 20,
+  "score_dead_penalty": 15,
+  "score_tick_efficiency_divisor": 10
+}

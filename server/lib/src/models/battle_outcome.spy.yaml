@@ -1,0 +1,8 @@
+### Coarse result of a resolved battle, derived from `sim_core`'s
+### `BattleResult` (attacker wins if it exfiltrated data and/or survived
+### with a positive score; see `BattleOutcomeClassifier` for the exact rule).
+enum: BattleOutcome
+values:
+  - attackerWin
+  - defenderWin
+  - draw

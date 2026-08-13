@@ -1,0 +1,510 @@
+[
+  {
+    "id": "firewall_detected",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": []
+  },
+  {
+    "id": "firewall_level_gt",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 10
+      }
+    ],
+    "unlock_mission": "ch1_m1"
+  },
+  {
+    "id": "firewall_has_exploit",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "id",
+        "type": "string"
+      }
+    ],
+    "unlock_mission": "ch1_m2"
+  },
+  {
+    "id": "antivirus_here",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m3"
+  },
+  {
+    "id": "antivirus_nearby",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m4"
+  },
+  {
+    "id": "node_has_data",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m5"
+  },
+  {
+    "id": "data_verified",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m6"
+  },
+  {
+    "id": "traffic_high",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m7"
+  },
+  {
+    "id": "energy_below",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 100
+      }
+    ],
+    "unlock_mission": "ch1_m8"
+  },
+  {
+    "id": "node_visited_before",
+    "family": "sensor",
+    "size_kb": 3,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m9"
+  },
+  {
+    "id": "alarm_active",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch1_m10"
+  },
+  {
+    "id": "carrying_data",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch2_m1"
+  },
+  {
+    "id": "at_entry_node",
+    "family": "sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch2_m2"
+  },
+  {
+    "id": "random_chance",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 100
+      }
+    ],
+    "unlock_mission": "ch2_m3"
+  },
+  {
+    "id": "tick_gt",
+    "family": "sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 600
+      }
+    ],
+    "unlock_mission": "ch2_m4"
+  },
+  {
+    "id": "copies_alive_gt",
+    "family": "sensor",
+    "size_kb": 3,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 32
+      }
+    ],
+    "unlock_mission": "ch2_m5"
+  },
+  {
+    "id": "move_random",
+    "family": "action",
+    "size_kb": 2,
+    "energy_cost": 2,
+    "noise": 1,
+    "params_schema": []
+  },
+  {
+    "id": "move_toward_data",
+    "family": "action",
+    "size_kb": 5,
+    "energy_cost": 3,
+    "noise": 1,
+    "params_schema": [],
+    "unlock_mission": "ch2_m6"
+  },
+  {
+    "id": "move_toward_exit",
+    "family": "action",
+    "size_kb": 5,
+    "energy_cost": 3,
+    "noise": 1,
+    "params_schema": [],
+    "unlock_mission": "ch2_m7"
+  },
+  {
+    "id": "move_back",
+    "family": "action",
+    "size_kb": 3,
+    "energy_cost": 2,
+    "noise": 1,
+    "params_schema": [],
+    "unlock_mission": "ch2_m8"
+  },
+  {
+    "id": "brute_force",
+    "family": "action",
+    "size_kb": 6,
+    "energy_cost": 8,
+    "noise": 9,
+    "params_schema": [],
+    "unlock_mission": "ch2_m9"
+  },
+  {
+    "id": "exploit",
+    "family": "action",
+    "size_kb": 8,
+    "energy_cost": 6,
+    "noise": 3,
+    "params_schema": [
+      {
+        "name": "id",
+        "type": "string"
+      }
+    ],
+    "unlock_mission": "ch2_m10"
+  },
+  {
+    "id": "disguise",
+    "family": "action",
+    "size_kb": 6,
+    "energy_cost": 5,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch3_m1"
+  },
+  {
+    "id": "copy_data",
+    "family": "action",
+    "size_kb": 4,
+    "energy_cost": 4,
+    "noise": 2,
+    "params_schema": []
+  },
+  {
+    "id": "delete_log",
+    "family": "action",
+    "size_kb": 4,
+    "energy_cost": 5,
+    "noise": 3,
+    "params_schema": [],
+    "unlock_mission": "ch3_m2"
+  },
+  {
+    "id": "plant_backdoor",
+    "family": "action",
+    "size_kb": 9,
+    "energy_cost": 10,
+    "noise": 5,
+    "params_schema": [],
+    "unlock_mission": "ch3_m3"
+  },
+  {
+    "id": "replicate",
+    "family": "action",
+    "size_kb": 14,
+    "energy_cost": 20,
+    "noise": 6,
+    "params_schema": [],
+    "unlock_mission": "ch3_m4"
+  },
+  {
+    "id": "self_destruct",
+    "family": "action",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 8,
+    "params_schema": [],
+    "unlock_mission": "ch3_m5"
+  },
+  {
+    "id": "wait",
+    "family": "action",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": []
+  },
+  {
+    "id": "if_else",
+    "family": "control_flow",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": []
+  },
+  {
+    "id": "priority",
+    "family": "control_flow",
+    "size_kb": 3,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch3_m6"
+  },
+  {
+    "id": "repeat",
+    "family": "control_flow",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 1,
+        "max": 20
+      }
+    ],
+    "unlock_mission": "ch3_m7"
+  },
+  {
+    "id": "random_branch",
+    "family": "control_flow",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch3_m8"
+  },
+  {
+    "id": "sequence",
+    "family": "control_flow",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": []
+  },
+  {
+    "id": "mark_node",
+    "family": "memory",
+    "size_kb": 3,
+    "energy_cost": 1,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch3_m9"
+  },
+  {
+    "id": "node_marked",
+    "family": "memory",
+    "size_kb": 3,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch3_m10"
+  },
+  {
+    "id": "counter_inc",
+    "family": "memory",
+    "size_kb": 3,
+    "energy_cost": 1,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m1"
+  },
+  {
+    "id": "counter_gt",
+    "family": "memory",
+    "size_kb": 4,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 100
+      }
+    ],
+    "unlock_mission": "ch4_m2"
+  },
+  {
+    "id": "timer_after",
+    "family": "memory",
+    "size_kb": 6,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 1,
+        "max": 600
+      }
+    ],
+    "unlock_mission": "ch4_m3"
+  },
+  {
+    "id": "intruder_detected",
+    "family": "defense_sensor",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m4"
+  },
+  {
+    "id": "intruder_copying",
+    "family": "defense_sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m5"
+  },
+  {
+    "id": "intruder_bruteforcing",
+    "family": "defense_sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m6"
+  },
+  {
+    "id": "noise_gt",
+    "family": "defense_sensor",
+    "size_kb": 2,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [
+      {
+        "name": "x",
+        "type": "int",
+        "min": 0,
+        "max": 100
+      }
+    ],
+    "unlock_mission": "ch4_m7"
+  },
+  {
+    "id": "quarantine",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 30,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m8"
+  },
+  {
+    "id": "lockdown_node",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch4_m9"
+  },
+  {
+    "id": "raise_alarm",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 20,
+    "params_schema": [],
+    "unlock_mission": "ch4_m10"
+  },
+  {
+    "id": "reroute_av",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch5_m1"
+  },
+  {
+    "id": "fake_data_swap",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 0,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch5_m2"
+  },
+  {
+    "id": "trace",
+    "family": "defense_action",
+    "size_kb": 1,
+    "energy_cost": 10,
+    "noise": 0,
+    "params_schema": [],
+    "unlock_mission": "ch5_m3"
+  }
+]

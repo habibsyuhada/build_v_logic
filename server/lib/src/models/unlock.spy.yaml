@@ -1,0 +1,13 @@
+### A block a player has unlocked (§2.4 `unlocks`), via campaign mission
+### completion (see app's CampaignController for the client-side mirror of
+### this table, kept in sync once cloud-sync lands).
+class: Unlock
+table: unlocks
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  player: Player?, relation(onDelete=Cascade)
+
+  ### content/blocks.json block id.
+  blockId: String
+
+  unlockedAt: DateTime, defaultModel=now

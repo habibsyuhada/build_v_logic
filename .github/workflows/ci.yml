@@ -34,7 +34,7 @@ jobs:
       - name: content_lint
         run: dart run tools/content_lint/bin/content_lint.dart content
 
-      - name: dart test (pure-Dart workspace packages)
+      - name: dart test (pure-Dart workspace packages + server business logic)
         run: |
           set -e
           for pkg in packages/content_schema packages/sim_core packages/shared_models tools/content_lint tools/bot_harness; do
@@ -44,6 +44,12 @@ jobs:
               echo "::endgroup::"
             fi
           done
+          # server/test/business is pure logic with no database dependency
+          # (see docs/DECISIONS.md); server/test/integration needs a live
+          # Postgres/Redis this CI job doesn't provision and is skipped.
+          echo "::group::dart test server/test/business"
+          (cd server && dart test test/business)
+          echo "::endgroup::"
 
       - name: flutter test (app)
         run: (cd app && flutter test)

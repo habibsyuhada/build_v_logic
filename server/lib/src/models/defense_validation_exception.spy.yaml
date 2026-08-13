@@ -1,0 +1,6 @@
+### Thrown when a submitted defense fails validation (§2.5) — malformed
+### JSON, failed anti-turtle check, over the 6-block defense-logic cap
+### (§1.4), or a locked block.
+exception: DefenseValidationException
+fields:
+  errors: List<String>

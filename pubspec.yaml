@@ -13,3 +13,4 @@ workspace:
   - tools/bot_harness
   - tools/mission_gen
   - app
+  - server

@@ -1,0 +1,42 @@
+### A PAYLOAD player profile (§2.4), one per `serverpod_auth` `AuthUser`.
+### Sign-in method itself (Google/Apple/email/guest) is handled by
+### `serverpod_auth`; this table only carries game-specific state.
+class: Player
+table: players
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The underlying serverpod_auth identity. One Player per AuthUser.
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### Whether this player is a guest account (§2.5: "guest account
+  ### (upgradeable)") — a guest's authUser has no linked login method yet.
+  isGuest: bool, defaultModel=true
+
+  ### Display handle, unique.
+  handle: String
+
+  createdAt: DateTime, defaultModel=now
+
+  ### PvP ladder rating (§1.5, §2.4), Elo-like.
+  rating: int, defaultModel=1000
+
+  ### Rating within the current season (§1.5); reset at season rollover.
+  seasonRating: int, defaultModel=1000
+
+  ### Soft currency (§1.6).
+  credits: int, defaultModel=0
+
+  ### Premium currency (§1.6), cosmetics only.
+  keys: int, defaultModel=0
+
+  ### Current virus capacity, grows via progression (§1.3: 40KB -> 90KB).
+  capacityKb: int, defaultModel=40
+
+  ### Player settings (accessibility, audio, etc.) as opaque JSON (§1.8).
+  settingsJson: String, defaultModel=''
+
+indexes:
+  players_handle_idx:
+    fields: handle
+    unique: true
