@@ -6,10 +6,9 @@ build/
 .pub/
 *.iml
 
-# Flutter (app/) — added ahead of Phase 2
+# Flutter (app/)
 app/.flutter-plugins
 app/.flutter-plugins-dependencies
-app/ios/
 app/android/local.properties
 
 # Serverpod generated (Phase 4)

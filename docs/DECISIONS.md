@@ -132,6 +132,60 @@ applied to "the spec assumes infrastructure the executor doesn't have."
   pass via bot harness," not a Phase 1 blocker — Phase 1's AC only
   requires the tool and the sim to exist and be correct, not for
   first-draft balance numbers to already be tuned.
+## Phase 2
+
+- **State management: no Riverpod/Bloc, just `ChangeNotifier` +
+  `ListenableBuilder`.** The plan doesn't mandate a state library. Given
+  the workbench's state (a node list + a few scalars) is simple and
+  entirely local to one screen, adding a code-gen-based state framework
+  would be scope creep for Phase 2. `provider`/`go_router` are still used
+  for what they're actually needed for (DI plumbing, routing); revisit if
+  Phase 3+ cross-screen state sharing gets complex enough to warrant it.
+- **Tap-to-connect instead of drag-a-rope.** §3.3 asks for "drag untuk
+  sambung" (drag to connect) plus a required accessible button
+  alternative. Implemented as tap-source → tap-target → pick-branch
+  instead of a live drag-line renderer: it needs no gesture-tracking
+  precision (touch or mouse), and it *is* its own accessibility fallback
+  by construction, rather than needing a second parallel implementation.
+  A drag-line visualization can be layered on top later without changing
+  the underlying `WorkbenchController` API.
+- **Branch keys are fixed per control-flow block type, not freeform.**
+  `if_else`/`random_branch` → `true`/`false`; `repeat` → `body`/`after`;
+  `priority` → `1`/`2`/`3`/`after` (capped at 3 candidates for the Phase 2
+  UI); everything else → `next`. This mirrors `chain_walker.dart` exactly
+  (`packages/sim_core/lib/src/interpreter/chain_walker.dart`), so a
+  program built in the editor and one built directly as a `DagDef` behave
+  identically. See `app/lib/features/workbench/branch_options.dart`.
+- **`sim_core.resolveBattle` gained an opt-in `includeSnapshots` param**
+  (`packages/sim_core/lib/src/replay/virus_snapshot.dart`) rather than the
+  app reconstructing per-tick energy/memory state from events. Events
+  don't carry every state mutation (e.g. energy spend isn't its own
+  event), so exact reconstruction from events alone isn't possible; a
+  resolver-side snapshot hook is the smallest change that keeps
+  `resolveBattle` the single source of truth. Defaults to `false` (and is
+  never requested by the PvP path) so wire logs stay small per §2.3; this
+  doesn't change the golden hashes (verified: all 10 still match).
+- **Local content is a bundled snapshot copied into `app/assets/content/`,
+  not a build-time symlink/generation step.** Flutter's asset bundler
+  needs real files inside the package; for Phase 2 (offline-only) a
+  straight copy of `content/blocks.json`/`balance.json`/one training
+  network is enough. A content-sync build step (so `app/assets/content/`
+  can't silently drift from `content/`) is a Phase 3/4 concern once the
+  remote-config path exists — noted here so it isn't forgotten.
+- **One built-in training network (`content/networks/training_01.json`),
+  not a network picker.** §3.3 allows testing "vs jaringan latihan
+  pilihan" (a *choice* of training networks) — Phase 2 ships exactly one,
+  since the curated topology set is Phase 3 scope (§5). The Test Run flow
+  is built to take any `NetworkDef`, so adding more later is additive.
+- **`flutter analyze`/`flutter test` are what's actually verifiable
+  here, not on-device performance.** "60fps di device mid-range" (§5
+  Phase 2 AC) requires physical hardware profiling this sandbox doesn't
+  have — see "Execution environment constraints" above. What's
+  substituted: `flutter analyze` clean, and 21 passing tests covering the
+  editor's logic layer (`WorkbenchController`, `TestRunController`,
+  `PresetRepository`) plus widget tests exercising the real screen (add a
+  block, budget counter updates, Test Run produces a scrubbable result).
+
 - **Block balance numbers (Phase 0 authoring pass).** §1.3 specifies cost
   *ranges* (sensor 1-5KB, action 2-14KB, control flow 1-3KB, memory 3-6KB)
   but not exact per-block numbers. `content/blocks.json` assigns concrete

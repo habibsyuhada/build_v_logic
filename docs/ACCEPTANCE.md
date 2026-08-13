@@ -25,7 +25,13 @@ Extra, beyond the letter of the AC: `tools/bot_harness` (§4.3) is implemented a
 
 ## Phase 2 — Workbench + Test Run
 
-_Pending._
+| AC | Status | Note |
+|---|---|---|
+| Rakit virus 15 blok di device mid-range 60fps | ⛔ | Requires physical Android hardware for FPS profiling — not available in this sandboxed environment. Substituted verification: `flutter analyze` clean, and a widget test builds/interacts with the real workbench screen without runtime errors. See `docs/DECISIONS.md` "Execution environment constraints". |
+| Lint editor bekerja | ✅ | `BudgetPanel` surfaces `content_schema.validateDag`'s errors/warnings live (same validator the server uses); covered by `workbench_controller_test.dart` ("lint surfaces the same validateDag errors...") and a widget test. |
+| Test run scrub/step berfungsi | ✅ | `TestRunController` (scrub/step/back, clamped to `[0, maxTick]`) + per-tick snapshot inspector, covered by `test_run_controller_test.dart` (5 tests) and a widget test that runs a real battle and asserts the scrubber/summary render. |
+
+21/21 `app/` tests pass, `flutter analyze` clean across the whole workspace (including `app/`).
 
 ## Phase 3 — Replay renderer + Campaign
 

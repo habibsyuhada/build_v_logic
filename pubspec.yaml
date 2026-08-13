@@ -11,3 +11,4 @@ workspace:
   - tools/content_lint
   - tools/balance_sim
   - tools/bot_harness
+  - app

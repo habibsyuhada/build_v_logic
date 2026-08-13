@@ -46,3 +46,34 @@ All notable changes to the PAYLOAD project, organized by execution phase
 - 57 tests total across `content_schema` (15), `sim_core` (38, including
   the 10 golden scenarios), and `bot_harness` (4); `dart analyze
   --fatal-infos` clean across the whole workspace.
+
+## Phase 2 — Workbench + Test Run (client offline)
+
+- `app/`: Flutter project scaffolded (Android + iOS platform folders),
+  wired into the Dart pub workspace (`flutter pub get` resolves
+  everything from the repo root now, including the pure-Dart packages).
+- Dark terminal theme (§1.8) with a colorblind-safe palette variant.
+- `go_router` routing skeleton across all §2.2 feature folders (workbench
+  is live; campaign/pvp/blueprints/network_builder/profile/shop/settings
+  are placeholder routes, filled in from Phase 3 onward).
+- Full workbench editor (§3.3): block tray (grouped by family, searchable),
+  pinch-zoom/pan node canvas, drag-to-reposition, tap-to-connect (doubles
+  as the required accessible alternative to a drag gesture), long-press
+  delete, live KB/capacity/stealth counter, and lint warnings reusing
+  `content_schema.validateDag` — the exact same validator the server will
+  run in Phase 4.
+- Test Run mode: resolves a battle locally via `sim_core.resolveBattle`
+  against a bundled training network, with a scrubbable timeline, step
+  forward/back, and a per-tick state inspector (energy, memory flags,
+  inventory) — powered by a new opt-in `includeSnapshots` param on
+  `resolveBattle` (`packages/sim_core/lib/src/replay/virus_snapshot.dart`).
+- Local preset storage (§2.4, capped at 12/player) behind a
+  storage-agnostic interface, backed by `shared_preferences` on-device and
+  an in-memory fake for tests.
+- `content/networks/training_01.json`: first authored network, validated
+  by `tools/content_lint`.
+- 21 tests in `app/` (widget tests exercising the real screen + pure
+  logic tests for the three controllers), `flutter analyze` clean.
+  CI (`.github/workflows/ci.yml`) switched from `dart-lang/setup-dart` to
+  `subosito/flutter-action`, since `app/`'s `flutter: sdk: flutter`
+  dependency requires `flutter pub get` to resolve the workspace at all.

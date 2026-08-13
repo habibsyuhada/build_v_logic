@@ -16,20 +16,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      # Flutter SDK bundles a matching Dart SDK, and app/ (a workspace
+      # member since Phase 2) depends on `flutter: sdk: flutter` — plain
+      # dart-lang/setup-dart can't resolve that, so the whole workspace
+      # (pure-Dart packages included) is resolved/tested via `flutter`
+      # from here on.
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: stable
+          channel: stable
 
-      - name: dart pub get (workspace)
-        run: dart pub get
+      - name: flutter pub get (workspace)
+        run: flutter pub get
 
-      - name: dart analyze
-        run: dart analyze --fatal-infos
+      - name: flutter analyze
+        run: flutter analyze --fatal-infos
 
       - name: content_lint
         run: dart run tools/content_lint/bin/content_lint.dart content
 
-      - name: dart test (all workspace packages)
+      - name: dart test (pure-Dart workspace packages)
         run: |
           set -e
           for pkg in packages/content_schema packages/sim_core packages/shared_models tools/content_lint tools/bot_harness; do
@@ -39,6 +44,9 @@ jobs:
               echo "::endgroup::"
             fi
           done
+
+      - name: flutter test (app)
+        run: (cd app && flutter test)
 
       - name: golden determinism hashes
         run: |

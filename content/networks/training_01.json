@@ -1,0 +1,15 @@
+{
+  "id": "training_01",
+  "nodes": [
+    { "id": "entry", "type": "entry", "edges": ["hall_a", "hall_b"] },
+    { "id": "hall_a", "type": "relay", "edges": ["junction"] },
+    { "id": "hall_b", "type": "relay", "edges": ["junction"] },
+    { "id": "junction", "type": "relay", "edges": ["gate"] },
+    { "id": "gate", "type": "relay", "edges": ["vault"],
+      "firewall": { "level": 1, "exploit_ids": [] } },
+    { "id": "vault", "type": "data", "edges": ["entry"],
+      "data": { "value": 20, "verified": true } },
+    { "id": "honeypot_1", "type": "honeypot", "edges": [] },
+    { "id": "core", "type": "core", "edges": [] }
+  ]
+}
